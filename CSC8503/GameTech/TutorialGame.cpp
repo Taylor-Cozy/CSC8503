@@ -19,6 +19,8 @@ TutorialGame::TutorialGame()	{
 
 	Debug::SetRenderer(renderer);
 
+	//physics->SetGravity(Vector3(0, 9.8f, 0));
+	//physics->SetLinearDamping(10.0f);
 	InitialiseAssets();
 }
 
@@ -241,6 +243,7 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::InitWorld() {
+	world->AddLayerConstraint(Vector2(0, 1));
 	world->ClearAndErase();
 	physics->Clear();
 
@@ -289,6 +292,9 @@ physics worlds. You'll probably need another function for the creation of OBB cu
 */
 GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass) {
 	GameObject* sphere = new GameObject();
+	
+	// Raycasting Tutorial 1 - Further Work Part 1
+	//sphere->SetLayer(1);
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
 	SphereVolume* volume = new SphereVolume(radius);
@@ -502,6 +508,7 @@ bool TutorialGame::SelectObject() {
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
 			if (selectionObject) {	//set colour to deselected;
 				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+				//selectionObject->SetLayer(0);
 				selectionObject = nullptr;
 				lockedObject	= nullptr;
 			}
@@ -512,6 +519,18 @@ bool TutorialGame::SelectObject() {
 			if (world->Raycast(ray, closestCollision, true)) {
 				selectionObject = (GameObject*)closestCollision.node;
 				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
+				//selectionObject->SetLayer(1);
+				//Ray r(selectionObject->GetTransform().GetPosition(), Vector3(0,0,-1));
+				//RayCollision col;
+
+				// Doesn't work for cubes for some reason idk
+
+				//if (world->Raycast(r, col, true)) {
+				//	((GameObject*)col.node)->GetRenderObject()->SetColour(Vector4(0, 0, 1, 1));
+				//	Debug::DrawLine(r.GetPosition(), col.collidedAt, Vector4(1, 0, 0, 1), 5.0f);
+				//}
+
+				Debug::DrawLine(ray.GetPosition(), closestCollision.collidedAt, Vector4(1, 0, 0, 1), 5.0f);
 				return true;
 			}
 			else {
@@ -553,5 +572,38 @@ added linear motion into our physics system. After the second tutorial, objects 
 line - after the third, they'll be able to twist under torque aswell.
 */
 void TutorialGame::MoveSelectedObject() {
+	renderer->DrawString("Click Force: " + std::to_string(forceMagnitude), Vector2(10, 20));
+	forceMagnitude += Window::GetMouse()->GetWheelMovement() * 100.0f;
 
+	if (!selectionObject)
+		return;
+
+	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::RIGHT)) {
+		Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
+		RayCollision closestCollision;
+		if (world->Raycast(ray, closestCollision, true)) {
+			if (closestCollision.node == selectionObject) {
+				selectionObject->GetPhysicsObject()->AddForce(ray.GetDirection() * forceMagnitude);
+			}
+		}
+	}
+
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::W)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::S)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::A)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::D)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude);
+	}
 }

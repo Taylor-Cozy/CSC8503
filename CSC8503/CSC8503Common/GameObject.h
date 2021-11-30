@@ -64,6 +64,7 @@ namespace NCL {
 			bool GetBroadphaseAABB(Vector3&outsize) const;
 
 			void UpdateBroadphaseAABB();
+			virtual void Update(float dt) {};
 
 			void SetWorldID(int newID) {
 				worldID = newID;
@@ -72,6 +73,9 @@ namespace NCL {
 			int		GetWorldID() const {
 				return worldID;
 			}
+
+			void SetLayer(int l) {	layer = l; }
+			int GetLayer() const { return layer; }
 
 		protected:
 			Transform			transform;
@@ -83,6 +87,8 @@ namespace NCL {
 			bool	isActive;
 			int		worldID;
 			string	name;
+
+			int layer = 0;
 
 			Vector3 broadphaseAABB;
 		};

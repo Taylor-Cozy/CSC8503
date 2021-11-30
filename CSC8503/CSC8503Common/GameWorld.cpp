@@ -68,6 +68,10 @@ void GameWorld::UpdateWorld(float dt) {
 	if (shuffleConstraints) {
 		std::random_shuffle(constraints.begin(), constraints.end());
 	}
+
+	for (auto x : gameObjects) {
+		x->Update(dt);
+	}
 }
 
 bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObject) const {
@@ -78,18 +82,28 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 		if (!i->GetBoundingVolume()) { //objects might not be collideable etc...
 			continue;
 		}
-		RayCollision thisCollision;
-		if (CollisionDetection::RayIntersection(r, *i, thisCollision)) {
-				
-			if (!closestObject) {	
-				closestCollision		= collision;
-				closestCollision.node = i;
-				return true;
+		bool skip = false;
+		for (auto layers : layerConstraints) {
+			//   Ray             Ignore objects
+			if (layers.x == 0 && layers.y == i->GetLayer()) { // check
+				skip = true;
 			}
-			else {
-				if (thisCollision.rayDistance < collision.rayDistance) {
-					thisCollision.node = i;
-					collision = thisCollision;
+		}
+
+		if (!skip) {
+			RayCollision thisCollision;
+			if (CollisionDetection::RayIntersection(r, *i, thisCollision)) {
+
+				if (!closestObject) {
+					closestCollision = collision;
+					closestCollision.node = i;
+					return true;
+				}
+				else {
+					if (thisCollision.rayDistance < collision.rayDistance) {
+						thisCollision.node = i;
+						collision = thisCollision;
+					}
 				}
 			}
 		}

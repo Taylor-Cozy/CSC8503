@@ -53,9 +53,19 @@ namespace NCL {
 				std::vector<Constraint*>::const_iterator& first,
 				std::vector<Constraint*>::const_iterator& last) const;
 
+			void AddLayerConstraint(Vector2 v) { layerConstraints.emplace_back(v); }
+			void RemoveLayerConstraint(Vector2 v) {
+				for (auto it = layerConstraints.begin(); it != layerConstraints.end(); it++) {
+					if (it->x == v.x && it->y == v.y) {
+						layerConstraints.erase(it);
+					}
+				}
+			}
+
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
+			std::vector<Vector2> layerConstraints;
 
 			Camera* mainCamera;
 
