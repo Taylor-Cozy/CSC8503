@@ -337,7 +337,6 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	world->AddGameObject(capsule);
 
 	return capsule;
-
 }
 
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {

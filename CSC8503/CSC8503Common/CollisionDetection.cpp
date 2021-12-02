@@ -111,8 +111,32 @@ bool CollisionDetection::RayOBBIntersection(const Ray&r, const Transform& worldT
 }
 
 bool CollisionDetection::RayCapsuleIntersection(const Ray& r, const Transform& worldTransform, const CapsuleVolume& volume, RayCollision& collision) {
-	// Get height where it would collide, check against sphere
-	return false;
+	// Generate plane
+	Vector3 pointA = worldTransform.GetPosition() + (worldTransform.GetOrientation() * Vector3(0, 1, 0) * (volume.GetHalfHeight() - volume.GetRadius()));
+	Vector3 pointB = worldTransform.GetPosition() + (worldTransform.GetOrientation() * Vector3(0, 1, 0) * -(volume.GetHalfHeight() - volume.GetRadius()));
+
+	Vector3 normal = r.GetPosition() - worldTransform.GetPosition();
+	Vector3 cross = Vector3::Cross(pointA - pointB, normal);
+	Vector3 pointC = worldTransform.GetPosition() + (cross.Normalised() * 5.0f);
+
+	Debug::DrawLine(pointA, pointB, Vector4(1, 0, 0, 1), 5.0f);
+	Debug::DrawLine(pointB, pointC, Vector4(1, 0, 0, 1), 5.0f);
+	Debug::DrawLine(pointC, pointA, Vector4(1, 0, 0, 1), 5.0f);
+
+	Plane p = Plane::PlaneFromTri(pointA, pointB, pointC);
+
+	bool hit = RayPlaneIntersection(r, p, collision);
+	Vector3 spherePos = Maths::Clamp(collision.collidedAt, pointA, pointB);
+	
+	// TODO make sphere at position then sphere check / crete transform
+
+	// Check if ray hits plane
+
+
+	// If so check how far along plane it hits and clamp position between certain values 
+	// check against sphere
+
+	//return false;
 }
 
 bool CollisionDetection::RaySphereIntersection(const Ray&r, const Transform& worldTransform, const SphereVolume& volume, RayCollision& collision) {
