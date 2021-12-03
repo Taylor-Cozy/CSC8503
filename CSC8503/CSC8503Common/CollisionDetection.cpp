@@ -112,31 +112,37 @@ bool CollisionDetection::RayOBBIntersection(const Ray&r, const Transform& worldT
 
 bool CollisionDetection::RayCapsuleIntersection(const Ray& r, const Transform& worldTransform, const CapsuleVolume& volume, RayCollision& collision) {
 	// Generate plane
-	Vector3 pointA = worldTransform.GetPosition() + (worldTransform.GetOrientation() * Vector3(0, 1, 0) * (volume.GetHalfHeight() - volume.GetRadius()));
-	Vector3 pointB = worldTransform.GetPosition() + (worldTransform.GetOrientation() * Vector3(0, 1, 0) * -(volume.GetHalfHeight() - volume.GetRadius()));
+	Vector3 pointA = worldTransform.GetPosition() + (worldTransform.GetOrientation() * (Vector3(0, 1, 0) * (volume.GetHalfHeight() - volume.GetRadius())));
+	Vector3 pointB = worldTransform.GetPosition() - (worldTransform.GetOrientation() * (Vector3(0, 1, 0) * (volume.GetHalfHeight() - volume.GetRadius())));
 
 	Vector3 normal = r.GetPosition() - worldTransform.GetPosition();
 	Vector3 cross = Vector3::Cross(pointA - pointB, normal);
 	Vector3 pointC = worldTransform.GetPosition() + (cross.Normalised() * 5.0f);
 
-	Debug::DrawLine(pointA, pointB, Vector4(1, 0, 0, 1), 5.0f);
-	Debug::DrawLine(pointB, pointC, Vector4(1, 0, 0, 1), 5.0f);
-	Debug::DrawLine(pointC, pointA, Vector4(1, 0, 0, 1), 5.0f);
-
 	Plane p = Plane::PlaneFromTri(pointA, pointB, pointC);
 
 	bool hit = RayPlaneIntersection(r, p, collision);
-	Vector3 spherePos = Maths::Clamp(collision.collidedAt, pointA, pointB);
+
+	if (!hit)
+		return false;
+
+	// Get closes point along line https://stackoverflow.com/questions/51905268/how-to-find-closest-point-on-line
+	Vector3 capsuleDir = pointA - pointB;
+	float capsuleLineLength = capsuleDir.Length();
+	capsuleDir.Normalise();
+
+	Vector3 rayCapDir = collision.collidedAt - pointB;
+	float dot = Maths::Clamp(Vector3::Dot(rayCapDir, capsuleDir), 0.0f, capsuleLineLength);
 	
-	// TODO make sphere at position then sphere check / crete transform
+	// Create sphere at point and check ray / sphere
+	Vector3 spherePos = pointB + (capsuleDir * dot);
+	SphereVolume s(volume.GetRadius());
+	Transform t;
+	t.SetPosition(spherePos);
+	t.SetScale(Vector3(volume.GetRadius(), volume.GetRadius(), volume.GetRadius()));
 
-	// Check if ray hits plane
-
-
-	// If so check how far along plane it hits and clamp position between certain values 
-	// check against sphere
-
-	//return false;
+	bool sphereCheck = RaySphereIntersection(r, t, s, collision);
+	return sphereCheck;
 }
 
 bool CollisionDetection::RaySphereIntersection(const Ray&r, const Transform& worldTransform, const SphereVolume& volume, RayCollision& collision) {

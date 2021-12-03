@@ -243,10 +243,11 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::InitWorld() {
-	world->AddLayerConstraint(Vector2(0, 1));
+	//world->AddLayerConstraint(Vector2(0, 1));
 	world->ClearAndErase();
 	physics->Clear();
 
+	//AddCapsuleToWorld(Vector3(15, 5, 0), 3.0f, 1.5f, 1.0f);
 	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	InitGameExamples();
 	InitDefaultFloor();
@@ -290,7 +291,7 @@ rigid body representation. This and the cube function will let you build a lot o
 physics worlds. You'll probably need another function for the creation of OBB cubes too.
 
 */
-GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool hollow) {
+GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool rubber, bool hollow) {
 	GameObject* sphere = new GameObject("Sphere");
 	
 	// Raycasting Tutorial 1 - Further Work Part 1
@@ -312,6 +313,11 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 		sphere->GetPhysicsObject()->InitHollowSphereInertia();
 	else
 		sphere->GetPhysicsObject()->InitSphereInertia();
+
+	if (rubber)
+		sphere->GetPhysicsObject()->SetElasticity(0.9f);
+	else
+		sphere->GetPhysicsObject()->SetElasticity(0.2f);
 
 	world->AddGameObject(sphere);
 
@@ -383,7 +389,7 @@ void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing
 				AddCubeToWorld(position, cubeDims);
 			}
 			else {
-				AddSphereToWorld(position, sphereRadius);
+				AddSphereToWorld(position, sphereRadius, 10.0f, rand() % 2);
 			}
 		}
 	}
