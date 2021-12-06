@@ -248,11 +248,12 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 
-	//AddCapsuleToWorld(Vector3(15, 5, 0), 3.0f, 1.5f, 1.0f);
-	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
-	InitGameExamples();
-	InitDefaultFloor();
-	BridgeConstraintTest();
+	AddCapsuleToWorld(Vector3(0, 5, 0), 3.0f, 1.5f, 1.0f);
+	AddCapsuleToWorld(Vector3(10, 5, 0), 3.0f, 1.5f, 1.0f);
+	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
+	//InitGameExamples();
+	//InitDefaultFloor();
+	//BridgeConstraintTest();
 }
 
 void TutorialGame::BridgeConstraintTest() {
@@ -618,24 +619,24 @@ void TutorialGame::MoveSelectedObject() {
 			}
 		}
 	}
-	/*
+	
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::W)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.2);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::S)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.2);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::A)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.2);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::D)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.2);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.2);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.2);
 	}
-	*/
+	
 }
