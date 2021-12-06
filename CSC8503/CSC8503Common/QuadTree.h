@@ -83,7 +83,28 @@ namespace NCL {
 			}
 
 			void DebugDraw() {
+				Vector3 s = size;
 				
+				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(s.x, s.y, s.z), Vector4(1,0,0,1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, -s.y, s.z), Vector4(1,0,0,1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, s.z), Vector4(1,0,0,1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, s.y, s.z), Vector4(1,0,0,1), 0.01f);
+
+				Debug::DrawLine(position + Vector3(-s.x, s.y, -s.z), position + Vector3(s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, s.y, -s.z), position + Vector3(s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, -s.z), position + Vector3(-s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, -s.z), position + Vector3(-s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+
+				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(-s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+
+				if (children) {
+					for (int i = 0; i < 8; i++) {
+						children[i].DebugDraw();
+					}
+				}
 			}
 
 			void OperateOnContents(QuadTreeFunc& func) {

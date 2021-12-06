@@ -325,6 +325,8 @@ void PhysicsSystem::BroadPhase() {
 			}
 		}
 	});
+
+	//tree.DebugDraw();
 }
 
 /*
