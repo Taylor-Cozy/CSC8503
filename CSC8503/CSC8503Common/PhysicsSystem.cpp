@@ -203,7 +203,8 @@ void PhysicsSystem::BasicCollisionDetection() {
 
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
-				ResolveSpringCollision(*info.a, *info.b, info.point);
+				//ResolveSpringCollision(*info.a, *info.b, info.point);
+				ImpulseResolveCollision(*info.a, *info.b, info.point);
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -326,7 +327,7 @@ void PhysicsSystem::BroadPhase() {
 		}
 	});
 
-	//tree.DebugDraw();
+	tree.DebugDraw();
 }
 
 /*
