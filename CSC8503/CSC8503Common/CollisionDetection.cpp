@@ -554,6 +554,8 @@ bool CollisionDetection::SphereCapsuleIntersection(
 	return sphereCheck;
 }
 
+// TODO fix AABB Capsule collisions
+
 bool NCL::CollisionDetection::AABBCapsuleIntersection(const CapsuleVolume& volumeA, const Transform& worldTransformA, const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo)
 {
 	// Generate plane

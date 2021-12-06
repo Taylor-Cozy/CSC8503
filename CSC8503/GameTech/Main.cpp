@@ -23,6 +23,16 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
+void TestStateMachine() {
+	StateMachine* testMachine = new StateMachine();
+	int data = 0;
+
+	State* A = new GenericState([&](float dt)->void {
+		std::cout << "I'm state A!\n";
+		data++;
+		}, &data);
+}
+
 int main() {
 	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
