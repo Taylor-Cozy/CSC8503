@@ -16,6 +16,9 @@ namespace NCL {
 
 			int type;
 
+			bool open = false;
+			bool closed = false;
+
 			GridNode() {
 				for (int i = 0; i < 4; ++i) {
 					connected[i] = nullptr;
@@ -36,7 +39,7 @@ namespace NCL {
 			~NavigationGrid();
 
 			bool FindPath(const Vector3& from, const Vector3& to, NavigationPath& outPath) override;
-				
+
 		protected:
 			bool		NodeInList(GridNode* n, std::vector<GridNode*>& list) const;
 			GridNode*	RemoveBestNode(std::vector<GridNode*>& list) const;

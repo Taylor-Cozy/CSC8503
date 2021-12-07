@@ -2,6 +2,7 @@
 #include "../../Common/Assets.h"
 
 #include <fstream>
+#include <queue>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -96,10 +97,9 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
 	GridNode* startNode = &allNodes[(fromZ * gridWidth) + fromX];
 	GridNode* endNode	= &allNodes[(toZ * gridWidth) + toX];
 
-	std::vector<GridNode*>  openList;
-	std::vector<GridNode*>  closedList;
+	std::queue<GridNode*>  openList;
 
-	openList.emplace_back(startNode);
+	openList.push(startNode);
 
 	startNode->f = 0;
 	startNode->g = 0;
@@ -108,7 +108,8 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
 	GridNode* currentBestNode = nullptr;
 
 	while (!openList.empty()) {
-		currentBestNode = RemoveBestNode(openList);
+		currentBestNode = openList.front();
+		openList.pop();
 
 		if (currentBestNode == endNode) {			//we've found the path!
 			GridNode* node = endNode;
@@ -124,7 +125,7 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
 				if (!neighbour) { //might not be connected...
 					continue;
 				}	
-				bool inClosed	= NodeInList(neighbour, closedList);
+				bool inClosed	= neighbour->closed;
 				if (inClosed) {
 					continue; //already discarded this neighbour...
 				}
@@ -133,10 +134,11 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
 				float g = currentBestNode->g + currentBestNode->costs[i];
 				float f = h + g;
 
-				bool inOpen		= NodeInList(neighbour, openList);
+				bool inOpen		= neighbour->open;
 
 				if (!inOpen) { //first time we've seen this neighbour
-					openList.emplace_back(neighbour);
+					openList.push(neighbour);
+					neighbour->open = true;
 				}
 				if (!inOpen || f < neighbour->f) {//might be a better route to this neighbour
 					neighbour->parent = currentBestNode;
@@ -144,7 +146,7 @@ bool NavigationGrid::FindPath(const Vector3& from, const Vector3& to, Navigation
 					neighbour->g = g;
 				}
 			}
-			closedList.emplace_back(currentBestNode);
+			currentBestNode->closed = true;
 		}
 	}
 	return false; //open list emptied out with no path!
