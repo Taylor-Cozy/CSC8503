@@ -84,6 +84,16 @@ namespace NCL {
 			return A + (AB * t);
 		}
 
+		static Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir) {
+			Vector3 localDir = worldTransform.GetOrientation().Conjugate() * worldDir;
+			Vector3 vertex;
+			vertex.x = localDir.x < 0.0f ? -0.5f : 0.5f;
+			vertex.y = localDir.y < 0.0f ? -0.5f : 0.5f;
+			vertex.z = localDir.z < 0.0f ? -0.5f : 0.5f;
+
+			return worldTransform.GetMatrix() * vertex;
+		}
+
 		//TODO ADD THIS PROPERLY
 		static bool RayBoxIntersection(const Ray&r, const Vector3& boxPos, const Vector3& boxSize, RayCollision& collision);
 

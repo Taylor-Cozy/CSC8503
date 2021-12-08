@@ -279,7 +279,7 @@ hide or show the
 int main() {
 	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
-	TestPushdownAutomata(w);
+	//TestPushdownAutomata(w);
 
 	if (!w->HasInitialised()) {
 		return -1;
@@ -288,13 +288,13 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 	
-	TestPathfinding();
-	TestBehaviourTree();
+	//TestPathfinding();
+	//TestBehaviourTree();
 
 	TutorialGame* g = new TutorialGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
-		DisplayPathfinding();
+		//DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

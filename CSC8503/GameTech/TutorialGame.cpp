@@ -6,7 +6,7 @@
 #include "../../Common/TextureLoader.h"
 #include "../CSC8503Common/PositionConstraint.h"
 #include "StateGameObject.h"
-
+#include "../../Common/Quaternion.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -255,13 +255,14 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 
-	//AddCapsuleToWorld(Vector3(0, 5, 0), 3.0f, 1.5f, 1.0f);
-	//AddCapsuleToWorld(Vector3(10, 5, 0), 3.0f, 1.5f, 1.0f);
-	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
-	InitGameExamples();
-	InitDefaultFloor();
-	BridgeConstraintTest();
-	testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
+	GameObject* a = AddCubeToWorld(Vector3(0, 5, 0), Vector3(1, 1, 1));
+	a->GetTransform().SetOrientation(Quaternion(0, 0.25f, 0, 1.0f));
+	AddCubeToWorld(Vector3(10, 5, 0), Vector3(1, 1, 1));
+	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
+	//InitGameExamples();
+	//InitDefaultFloor();
+	//BridgeConstraintTest();
+	//testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
 }
 
 void TutorialGame::BridgeConstraintTest() {

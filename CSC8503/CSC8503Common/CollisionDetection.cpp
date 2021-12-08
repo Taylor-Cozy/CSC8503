@@ -524,6 +524,72 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 bool CollisionDetection::OBBIntersection(
 	const OBBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	Vector3 dir;
+
+	// Get A directions
+	// aXdir
+	dir = Vector3(1, 0, 0);
+	Vector3 maxA = OBBSupport(worldTransformA, worldTransformA.GetOrientation() * dir);
+	Vector3 minA = OBBSupport(worldTransformA, worldTransformA.GetOrientation() * -dir);
+
+	Vector3 maxB = OBBSupport(worldTransformB, worldTransformA.GetOrientation() * dir);
+	Vector3 minB = OBBSupport(worldTransformB, worldTransformA.GetOrientation() * -dir);
+
+	Debug::DrawLine(minA, minA + Vector3(0, 1, 0), Debug::CYAN);
+	Debug::DrawLine(maxA, maxA + Vector3(0, 1, 0), Debug::CYAN);
+
+	Debug::DrawLine(minB, minB + Vector3(0, 1, 0), Debug::MAGENTA);
+	Debug::DrawLine(maxB, maxB + Vector3(0, 1, 0), Debug::MAGENTA);
+
+	float minDot = Vector3::Dot((maxA - minA).Normalised(), minB - minA);
+	float length = (maxA - minA).Length();
+
+	if (minDot >= 0.0f && minDot <= length) {
+		//colliding
+		std::cout << "Colliding 1" << std::endl;
+		Debug::DrawLine(minA + ((maxA - minA).Normalised() * minDot), minB, Debug::GREEN);
+	}
+
+	float maxDot = Vector3::Dot((minA - maxA).Normalised(), maxB - maxA);
+	if (maxDot >= 0.0f && maxDot <= (minA - maxA).Length()) {
+		//colliding
+		std::cout << "Colliding 2" << std::endl;
+		Debug::DrawLine(maxA + ((minA - maxA).Normalised() * maxDot), maxB, Debug::GREEN);
+	}
+
+	if (minDot < 0.0f && maxDot < 0.0f) {
+		std::cout << "Colliding 3" << std::endl;
+		Debug::DrawLine(minA, minB, Debug::GREEN);
+		Debug::DrawLine(maxA, maxB, Debug::GREEN);
+	}
+
+	//Debug::DrawLine(maxA - minA, maxB - minA, Debug::GREEN);
+
+	// aYdir
+	// aZdir
+	//
+	// Get B directions
+	// bXdir
+	// bYdir
+	// bZdir
+	//
+	// Get Crosses
+	// aX x bX
+	// aX x bY
+	// aX x bZ
+	//
+	// aY x bX
+	// aY x bY
+	// aY x bZ
+	//
+	// aZ x bX
+	// aZ x bY
+	// aZ x bZ
+	//
+	//Vector3 aExtents = OBBSupport(worldTransformA, Vector3(0,-1,0));
+	//Debug::DrawLine(aExtents, aExtents + Vector3(0, -2.0f, 0), Vector4(1, 0, 0, 1));
+	//Debug::DrawLine(aExtents, aExtents + Vector3(2.0f, 0.0f, 0), Vector4(1, 0, 0, 1));
 	return false;
 }
 
