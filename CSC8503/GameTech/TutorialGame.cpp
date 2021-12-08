@@ -180,39 +180,39 @@ void TutorialGame::LockedObjectMovement() {
 
 	float force = 100.0f;
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
-		lockedObject->GetPhysicsObject()->AddForce(-rightAxis * force);
-	}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
+	//	lockedObject->GetPhysicsObject()->AddForce(-rightAxis * force);
+	//}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-		Vector3 worldPos = selectionObject->GetTransform().GetPosition();
-		lockedObject->GetPhysicsObject()->AddForce(rightAxis * force);
-	}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
+	//	Vector3 worldPos = selectionObject->GetTransform().GetPosition();
+	//	lockedObject->GetPhysicsObject()->AddForce(rightAxis * force);
+	//}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-		lockedObject->GetPhysicsObject()->AddForce(fwdAxis * force);
-	}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+	//	lockedObject->GetPhysicsObject()->AddForce(fwdAxis * force);
+	//}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-		lockedObject->GetPhysicsObject()->AddForce(-fwdAxis * force);
-	}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+	//	lockedObject->GetPhysicsObject()->AddForce(-fwdAxis * force);
+	//}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT)) {
-		lockedObject->GetPhysicsObject()->AddForce(Vector3(0,-10,0));
-	}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT)) {
+	//	lockedObject->GetPhysicsObject()->AddForce(Vector3(0,-10,0));
+	//}
 }
 
 void TutorialGame::DebugObjectMovement() {
 //If we've selected an object, we can manipulate it with some key presses
 	if (inSelectionMode && selectionObject) {
 		//Twist the selected object!
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(-10, 0, 0));
-		}
+		//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
+		//	selectionObject->GetPhysicsObject()->AddTorque(Vector3(-10, 0, 0));
+		//}
 
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
-		}
+		//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
+		//	selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
+		//}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM7)) {
 			selectionObject->GetPhysicsObject()->AddTorque(Vector3(0, 10, 0));
@@ -222,17 +222,17 @@ void TutorialGame::DebugObjectMovement() {
 			selectionObject->GetPhysicsObject()->AddTorque(Vector3(0, -10, 0));
 		}
 
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
-		}
+		//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
+		//	selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
+		//}
 
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -10));
-		}
+		//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+		//	selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -10));
+		//}
 
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 10));
-		}
+		//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+		//	selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 10));
+		//}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5)) {
 			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -10, 0));
@@ -257,7 +257,8 @@ void TutorialGame::InitWorld() {
 
 	GameObject* a = AddCubeToWorld(Vector3(0, 5, 0), Vector3(1, 1, 1));
 	a->GetTransform().SetOrientation(Quaternion(0, 0.25f, 0, 1.0f));
-	AddCubeToWorld(Vector3(10, 5, 0), Vector3(1, 1, 1));
+	GameObject* b = AddCubeToWorld(Vector3(10, 5, 0), Vector3(1, 1, 1));
+	b->GetTransform().SetOrientation(Quaternion(0.25f, 0, 0, 1.0f));
 	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	//InitGameExamples();
 	//InitDefaultFloor();
@@ -650,23 +651,23 @@ void TutorialGame::MoveSelectedObject() {
 		}
 	}
 	
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::W)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.2);
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::UP)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.1);
 	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::S)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.2);
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::DOWN)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.1);
 	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::A)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.2);
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::LEFT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.1);
 	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::D)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.2);
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::RIGHT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.2);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.2);
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.1);
 	}
 	
 }
