@@ -556,59 +556,74 @@ bool CollisionDetection::OBBIntersection(
 	float leastPenetration = FLT_MAX;
 	int penIndex = -1;
 
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 1; ++i) {
 		// Get min and max extents for both shapes along an axis
 		Vector3 maxA = OBBSupport(worldTransformA, directions[i]);
 		Vector3 minA = OBBSupport(worldTransformA, -directions[i]);
 
 		Vector3 maxB = OBBSupport(worldTransformB, directions[i]);
 		Vector3 minB = OBBSupport(worldTransformB, -directions[i]);
+		
+		//Debug::DrawLine(-directions[i] * 500.0f, directions[i] * 500.0f, Debug::RED);
+		
+		// Project those points on to the line
+		float denom = Vector3::Dot(directions[i], directions[i]);
 
-		// Get length of face along axis
-		float length = (maxA - minA).Length();
-		float minDot = Vector3::Dot((maxA - minA).Normalised(), minB - minA);
-		float maxDot = Vector3::Dot((minA - maxA).Normalised(), maxB - maxA);
+		Vector3 minExtentA = directions[i] * (Vector3::Dot(minA, directions[i]) / denom);
+		Vector3 maxExtentA = directions[i] * (Vector3::Dot(maxA, directions[i]) / denom);
+		Vector3 minExtentB = directions[i] * (Vector3::Dot(minB, directions[i]) / denom);
+		Vector3 maxExtentB = directions[i] * (Vector3::Dot(maxB, directions[i]) / denom);
 
-		float penetration;
+		Debug::DrawLine(minExtentA, minExtentA + Vector3(0,1,0), Debug::GREEN);
+		Debug::DrawLine(maxExtentA, maxExtentA + Vector3(0,1,0), Debug::CYAN);
+		Debug::DrawLine(minExtentB, minExtentB + Vector3(0,1,0), Debug::BLUE);
+		Debug::DrawLine(maxExtentB, maxExtentB + Vector3(0,1,0), Debug::MAGENTA);
 
-		if (minDot >= 0.0f && minDot <= length) {
-			penetration = length - minDot;
-			if (penetration < leastPenetration) {
-				leastPenetration = penetration;
-				//collisionInfo.point.normal = directions[i];
-				//collisionInfo.point.localA = worldTransformA.GetPosition();
-				//collisionInfo.point.localB = worldTransformB.GetPosition();
+		float distance = FLT_MAX;
+		float length = FLT_MAX;
+		float penDist = FLT_MAX;
+
+		float left = Vector3::Dot(maxExtentA - minExtentA, minExtentB - minExtentA);
+		float right = Vector3::Dot(minExtentA - maxExtentA, maxExtentB - maxExtentA);
+
+		if (left > 0.0f) {
+			// Object A to the left
+			distance = (minExtentB - minExtentA).Length();
+			length = (maxExtentA - minExtentA).Length();
+			if (distance <= length) {
+				penDist = length - distance;
+				if (penDist < leastPenetration) {
+					leastPenetration = penDist;
+					collisionInfo.point.localA = maxA;
+					collisionInfo.point.localB = minB;
+					collisionInfo.point.normal = directions[i];
+				}
+				continue;
 			}
-			std::cout << "Penetration " << penetration << std::endl;
-			Debug::DrawLine(minA + ((maxA - minA).Normalised() * minDot), minB, Debug::GREEN);
-			continue;
 		}
-
-		if (maxDot >= 0.0f && maxDot <= length) {
-			penetration = length - maxDot;
-			if (penetration < leastPenetration) {
-			//	leastPenetration = penetration;
-			//	collisionInfo.point.normal = directions[i];
-			//	collisionInfo.point.localA = worldTransformA.GetPosition();
-			//	collisionInfo.point.localB = worldTransformB.GetPosition();
+		if(right > 0.0f) {
+			// Object B to the left
+			distance = (maxExtentB - maxExtentA).Length();
+			length = (maxExtentA - minExtentA).Length();
+			if (distance <= length) {
+				penDist = length - distance;
+				if (penDist < leastPenetration) {
+					leastPenetration = penDist;
+					collisionInfo.point.localA = minA;
+					collisionInfo.point.localB = maxB;
+					collisionInfo.point.normal = -directions[i];
+				}
+				continue;
 			}
-			std::cout << "Penetration " << penetration << std::endl;
-			Debug::DrawLine(maxA + ((minA - maxA).Normalised() * maxDot), maxB, Debug::BLUE);
-			continue;
 		}
-
-		if (minDot < 0.0f && maxDot < 0.0f) {
-			// B bigger than A
-
-			Debug::DrawLine(minA, minB, Debug::GREEN);
-			Debug::DrawLine(maxA, maxB, Debug::BLUE);
-			continue;
+		if (left < 0.0f && right < 0.0f) {
+			//Debug::DrawLine(-directions[i] * 500.0f, directions[i] * 500.0f, Debug::CYAN);
+			penDist = (maxExtentA - minExtentA).Length();
 		}
-
 		return false;
 	}
 
-	//collisionInfo.point.penetration = leastPenetration;
+	collisionInfo.point.penetration = leastPenetration;
 	return true;
 }
 

@@ -255,9 +255,9 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 
-	GameObject* a = AddCubeToWorld(Vector3(0, 5, 0), Vector3(1, 1, 1));
+	GameObject* a = AddCubeToWorld(Vector3(0, 1.5f, 0), Vector3(1, 1, 1));
 	a->GetTransform().SetOrientation(Quaternion(0, 0.25f, 0, 1.0f));
-	GameObject* b = AddCubeToWorld(Vector3(10, 5, 0), Vector3(1, 1, 1));
+	GameObject* b = AddCubeToWorld(Vector3(10, 1.5f, 0), Vector3(1, 1, 1));
 	b->GetTransform().SetOrientation(Quaternion(0.25f, 0, 0, 1.0f));
 
 	//AddCubeToWorld(Vector3(0, 10, 0), Vector3(1, 1, 1));
