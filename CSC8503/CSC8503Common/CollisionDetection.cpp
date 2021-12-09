@@ -556,7 +556,10 @@ bool CollisionDetection::OBBIntersection(
 	float leastPenetration = FLT_MAX;
 	int penIndex = -1;
 
-	for (int i = 0; i < 1; ++i) {
+	for (int i = 0; i < 15; ++i) {
+		if (Vector3::Dot(directions[i], directions[i]) < 0.99f)
+			continue;
+
 		// Get min and max extents for both shapes along an axis
 		Vector3 maxA = OBBSupport(worldTransformA, directions[i]);
 		Vector3 minA = OBBSupport(worldTransformA, -directions[i]);
@@ -618,11 +621,13 @@ bool CollisionDetection::OBBIntersection(
 		}
 		if (left < 0.0f && right < 0.0f) {
 			//Debug::DrawLine(-directions[i] * 500.0f, directions[i] * 500.0f, Debug::CYAN);
-			penDist = (maxExtentA - minExtentA).Length();
+			//penDist = (maxExtentA - minExtentA).Length();
+			continue;
 		}
+		
 		return false;
 	}
-
+	std::cout << "Colliding" << std::endl;
 	collisionInfo.point.penetration = leastPenetration;
 	return true;
 }
