@@ -556,7 +556,7 @@ bool CollisionDetection::OBBIntersection(
 	float leastPenetration = FLT_MAX;
 	int penIndex = -1;
 
-	for (int i = 0; i < 1; ++i) {
+	for (int i = 0; i < 15; ++i) {
 		// Get min and max extents for both shapes along an axis
 		Vector3 maxA = OBBSupport(worldTransformA, directions[i]);
 		Vector3 minA = OBBSupport(worldTransformA, -directions[i]);
@@ -575,9 +575,9 @@ bool CollisionDetection::OBBIntersection(
 			penetration = length - minDot;
 			if (penetration < leastPenetration) {
 				leastPenetration = penetration;
-				collisionInfo.point.normal = directions[i];
-				collisionInfo.point.localA = worldTransformA.GetPosition();
-				collisionInfo.point.localB = worldTransformB.GetPosition();
+				//collisionInfo.point.normal = directions[i];
+				//collisionInfo.point.localA = worldTransformA.GetPosition();
+				//collisionInfo.point.localB = worldTransformB.GetPosition();
 			}
 			std::cout << "Penetration " << penetration << std::endl;
 			Debug::DrawLine(minA + ((maxA - minA).Normalised() * minDot), minB, Debug::GREEN);
@@ -587,10 +587,10 @@ bool CollisionDetection::OBBIntersection(
 		if (maxDot >= 0.0f && maxDot <= length) {
 			penetration = length - maxDot;
 			if (penetration < leastPenetration) {
-				leastPenetration = penetration;
-				collisionInfo.point.normal = directions[i];
-				collisionInfo.point.localA = worldTransformA.GetPosition();
-				collisionInfo.point.localB = worldTransformB.GetPosition();
+			//	leastPenetration = penetration;
+			//	collisionInfo.point.normal = directions[i];
+			//	collisionInfo.point.localA = worldTransformA.GetPosition();
+			//	collisionInfo.point.localB = worldTransformB.GetPosition();
 			}
 			std::cout << "Penetration " << penetration << std::endl;
 			Debug::DrawLine(maxA + ((minA - maxA).Normalised() * maxDot), maxB, Debug::BLUE);
@@ -608,7 +608,7 @@ bool CollisionDetection::OBBIntersection(
 		return false;
 	}
 
-	collisionInfo.point.penetration = leastPenetration;
+	//collisionInfo.point.penetration = leastPenetration;
 	return true;
 }
 

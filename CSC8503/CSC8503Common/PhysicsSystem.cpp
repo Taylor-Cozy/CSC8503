@@ -263,6 +263,18 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -fullImpulse));
 	physB->ApplyAngularImpulse(Vector3::Cross(relativeB, fullImpulse));
+
+	// Friction
+	float mu = (physA->GetFriction() + physB->GetFriction()) / 2.0f;
+	Vector3 t = contactVelocity - (p.normal * (Vector3::Dot(contactVelocity, p.normal)));
+	inertiaA = Vector3::Cross(physA->GetInertiaTensor() * Vector3::Cross(relativeA, t), relativeA);
+	inertiaB = Vector3::Cross(physB->GetInertiaTensor() * Vector3::Cross(relativeB, t), relativeB);
+	angularEffect = Vector3::Dot(inertiaA + inertiaB, t);
+	float frictionJ = -(Vector3::Dot(contactVelocity * mu, t)) / (totalMass + angularEffect);
+	Vector3 frictionImpulse = t * frictionJ;
+
+	//physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -frictionImpulse));
+	//physB->ApplyAngularImpulse(Vector3::Cross(relativeB, frictionImpulse));
 }
 
 void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const
