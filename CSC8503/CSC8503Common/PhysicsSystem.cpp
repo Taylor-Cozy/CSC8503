@@ -25,7 +25,7 @@ PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
 	dTOffset		= 0.0f;
 	globalDamping	= 0.995f;
 	linearDamping	= 0.4f;
-	SetGravity(Vector3(0.0f, -9.8f, 0.0f));
+	SetGravity(Vector3(0.0f, -19.6f, 0.0f));
 }
 
 PhysicsSystem::~PhysicsSystem()	{
@@ -258,11 +258,14 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	Vector3 fullImpulse = p.normal * j;
 
+	float magnitude = fullImpulse.Length();
+	
 	physA->ApplyLinearImpulse(-fullImpulse);
 	physB->ApplyLinearImpulse(fullImpulse);
 
 	physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -fullImpulse));
 	physB->ApplyAngularImpulse(Vector3::Cross(relativeB, fullImpulse));
+
 
 	// Friction
 	float mu = (physA->GetFriction() + physB->GetFriction()) / 2.0f;
@@ -273,8 +276,8 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	float frictionJ = -(Vector3::Dot(contactVelocity * mu, t)) / (totalMass + angularEffect);
 	Vector3 frictionImpulse = t * frictionJ;
 
-	//physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -frictionImpulse));
-	//physB->ApplyAngularImpulse(Vector3::Cross(relativeB, frictionImpulse));
+	physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -frictionImpulse));
+	physB->ApplyAngularImpulse(Vector3::Cross(relativeB, frictionImpulse));
 }
 
 void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const
