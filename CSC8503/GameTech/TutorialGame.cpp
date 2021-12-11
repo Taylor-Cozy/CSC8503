@@ -21,6 +21,8 @@ TutorialGame::TutorialGame()	{
 
 	testStateObject = nullptr;
 
+	state = PLAY;
+
 	Debug::SetRenderer(renderer);
 
 	//physics->SetGravity(Vector3(0, 9.8f, 0));
@@ -74,6 +76,20 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
+
+	switch (state) {
+	case PLAY: UpdateGameWorld(dt); break;
+	case PAUSE: UpdatePauseScreen(dt); break;
+	}
+
+	renderer->Update(dt);
+
+	Debug::FlushRenderables(dt);
+	renderer->Render();
+}
+
+void TutorialGame::UpdateGameWorld(float dt)
+{
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
@@ -99,7 +115,7 @@ void TutorialGame::UpdateGame(float dt) {
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
 		Vector3 camPos = objPos + lockedOffset;
 
-		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0,1,0));
+		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
 
 		Matrix4 modelMat = temp.Inverse();
 
@@ -114,10 +130,13 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 
 	world->UpdateWorld(dt);
-	renderer->Update(dt);
+}
 
-	Debug::FlushRenderables(dt);
-	renderer->Render();
+void TutorialGame::UpdatePauseScreen(float dt)
+{
+	renderer->DrawString("PAUSED", Vector2(5, 80), Debug::MAGENTA, 30.0f);
+	renderer->DrawString("Press P to Unpause.", Vector2(5, 90), Debug::WHITE, 20.0f);
+	renderer->DrawString("Press Esc to return to Main Menu.", Vector2(5, 95), Debug::WHITE, 20.0f);
 }
 
 void TutorialGame::UpdateKeys() {
@@ -559,6 +578,7 @@ StateGameObject* NCL::CSC8503::TutorialGame::AddStateObjectWorld(const Vector3& 
 
 	return apple;
 }
+
 
 /*
 

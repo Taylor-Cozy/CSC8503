@@ -7,6 +7,8 @@
 #include "../CSC8503Common/NavigationGrid.h"
 
 #include "TutorialGame.h"
+#include "LevelOne.h"
+#include "MainMenu.h"
 #include "../CSC8503Common/BehaviourAction.h"
 #include "../CSC8503Common/BehaviourSequence.h"
 #include "../CSC8503Common/BehaviourSelector.h"
@@ -52,6 +54,84 @@ using namespace CSC8503;
 //		testMachine->Update(1.0f);
 //	}
 //}
+
+class PauseGame : public PushdownState {
+public:
+	PauseGame(TutorialGame* g) : g(g) {};
+
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		g->UpdateGame(dt);
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) {
+			return PushdownResult::Pop;
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+			return PushdownResult::Reset;
+		}
+		return PushdownResult::NoChange;
+	}
+
+	void OnAwake() override {
+		g->SetState(PAUSE);
+	}
+
+protected:
+	TutorialGame* g;
+};
+
+class Game : public PushdownState {
+public:
+	Game(TutorialGame* g) : g(g) {};
+
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		g->UpdateGame(dt);
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) {
+			*newState = new PauseGame(g);
+			return PushdownResult::Push;
+		}
+
+		return PushdownResult::NoChange;
+	}
+
+	void OnAwake() override {
+		g->SetState(PLAY);
+	}
+
+protected:
+	TutorialGame* g;
+};
+
+class Menu : public PushdownState {
+public:
+	Menu(MainMenu* m, TutorialGame* g, TutorialGame* f) : m(m), g(g), f(f) {};
+
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		m->UpdateGame(dt);
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
+			*newState = new Game(g);
+			return PushdownResult::Push;
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
+			*newState = new Game(f);
+			return PushdownResult::Push;
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+			return PushdownResult::Exit;
+		}
+
+		return PushdownResult::NoChange;
+	}
+
+protected:
+	TutorialGame* g;
+	TutorialGame* f;
+	MainMenu* m;
+};
 
 class PauseScreen : public PushdownState {
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
@@ -292,8 +372,11 @@ int main() {
 	//TestBehaviourTree();
 
 	TutorialGame* g = new TutorialGame();
+	LevelOne* f = new LevelOne();
+	MainMenu* m = new MainMenu();
+	PushdownMachine p = new Menu(m, g, f);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
+	while (w->UpdateWindow()) {
 		//DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
@@ -313,7 +396,9 @@ int main() {
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		g->UpdateGame(dt);
+		if (!p.Update(dt)) {
+			return 0;
+		}
 	}
 	Window::DestroyGameWindow();
 }

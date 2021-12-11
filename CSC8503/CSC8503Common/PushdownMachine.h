@@ -1,9 +1,9 @@
 #pragma once
+#include "PushdownState.h"
 #include <stack>
 
 namespace NCL {
 	namespace CSC8503 {
-		class PushdownState;
 
 		class PushdownMachine
 		{
@@ -15,6 +15,14 @@ namespace NCL {
 			~PushdownMachine() {};
 
 			bool Update(float dt);
+
+			void Reset() {
+				std::stack<PushdownState*> empty;
+				stateStack = empty;
+				stateStack.push(initialState);
+				activeState = initialState;
+				activeState->OnAwake();
+			}
 
 		protected:
 			PushdownState * activeState;

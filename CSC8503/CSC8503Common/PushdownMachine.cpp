@@ -1,5 +1,4 @@
 #include "PushdownMachine.h"
-#include "PushdownState.h"
 using namespace NCL::CSC8503;
 
 bool PushdownMachine::Update(float dt) {
@@ -26,6 +25,12 @@ bool PushdownMachine::Update(float dt) {
 				activeState = newState;
 				newState->OnAwake();
 			}break;
+			case PushdownState::Reset: {
+				Reset();
+			} break;
+			case PushdownState::Exit: {
+				return false;
+			}
 		}
 	}
 	else {

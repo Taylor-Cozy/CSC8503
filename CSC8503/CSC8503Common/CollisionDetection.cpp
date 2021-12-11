@@ -629,6 +629,8 @@ bool CollisionDetection::OBBIntersection(
 		}
 
 		if (left < 0.0f && right < 0.0f) {
+			// Fully eveloped, should never be minimum intersection so don't update
+			
 			//Debug::DrawLine(-directions[i] * 500.0f, directions[i] * 500.0f, Debug::CYAN);
 			//penDist = (maxExtentA - minExtentA).Length();
 			penIndex = i;

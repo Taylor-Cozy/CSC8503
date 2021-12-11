@@ -4,13 +4,19 @@
 
 namespace NCL {
 	namespace CSC8503 {
+		enum GameState {
+			PLAY,
+			PAUSE
+		};
+
 		class StateGameObject;
 		class TutorialGame		{
 		public:
 			TutorialGame();
-			~TutorialGame();
+			virtual ~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			void SetState(GameState s) { state = s; }
 
 		protected:
 			void InitialiseAssets();
@@ -18,7 +24,7 @@ namespace NCL {
 			void InitCamera();
 			void UpdateKeys();
 
-			void InitWorld();
+			virtual void InitWorld();
 
 			void InitGameExamples();
 
@@ -49,6 +55,11 @@ namespace NCL {
 			GameTechRenderer*	renderer;
 			PhysicsSystem*		physics;
 			GameWorld*			world;
+
+			GameState state;
+
+			void UpdateGameWorld(float dt);
+			void UpdatePauseScreen(float dt);
 
 			bool useGravity;
 			bool inSelectionMode;
