@@ -293,7 +293,7 @@ void TutorialGame::InitWorld() {
 	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	//InitGameExamples();
 	InitDefaultFloor();
-	//BridgeConstraintTest();
+	BridgeConstraintTest();
 	//testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
 }
 
@@ -331,12 +331,12 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
 	Vector3 floorSize	= Vector3(100, 2, 100);
-	OBBVolume* volume	= new OBBVolume(floorSize);
+	AABBVolume* volume	= new AABBVolume(floorSize);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
-		.SetPosition(position)
-		.SetOrientation(Quaternion(0.25f, 0, 0, 1));
+		.SetPosition(position);
+		//.SetOrientation(Quaternion(0.25f, 0, 0, 1));
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -410,12 +410,16 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	return capsule;
 }
 
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass) {
 	GameObject* cube = new GameObject("Cube");
-
-	//AABBVolume* volume = new AABBVolume(dimensions);
-	OBBVolume* volume = new OBBVolume(dimensions);
-	cube->SetBoundingVolume((CollisionVolume*)volume);
+	if (OBB) {
+		OBBVolume* volume = new OBBVolume(dimensions);
+		cube->SetBoundingVolume((CollisionVolume*)volume);
+	}
+	else {
+		AABBVolume* volume = new AABBVolume(dimensions);
+		cube->SetBoundingVolume((CollisionVolume*)volume);
+	}
 
 	cube->GetTransform()
 		.SetPosition(position)

@@ -376,7 +376,7 @@ int main() {
 	MainMenu* m = new MainMenu();
 	PushdownMachine p = new Menu(m, g, f);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow()) {
+	while (w->UpdateWindow() && !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 		//DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
@@ -396,9 +396,11 @@ int main() {
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		if (!p.Update(dt)) {
-			return 0;
-		}
+		//if (!p.Update(dt)) {
+		//	return 0;
+		//}
+
+		g->UpdateGame(dt);
 	}
 	Window::DestroyGameWindow();
 }

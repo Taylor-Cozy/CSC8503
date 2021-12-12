@@ -123,6 +123,9 @@
     <ClInclude Include="BehaviourAction.h">
       <Filter>AI</Filter>
     </ClInclude>
+    <ClInclude Include="OrientationConstraint.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp">
@@ -171,6 +174,9 @@
       <Filter>CollisionDetection</Filter>
     </ClCompile>
     <ClCompile Include="PositionConstraint.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="OrientationConstraint.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
   </ItemGroup>
