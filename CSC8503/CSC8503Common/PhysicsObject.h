@@ -75,6 +75,9 @@ namespace NCL {
 			void SetFriction(float f) { friction = f; }
 			float GetFriction() const { return friction; }
 
+			bool UsesGravity() const { return useGravity; }
+			void SetGravity(bool k) { useGravity = k; }
+
 		protected:
 			const CollisionVolume* volume;
 			Transform*		transform;
@@ -82,6 +85,8 @@ namespace NCL {
 			float inverseMass;
 			float elasticity;
 			float friction;
+
+			bool useGravity = true;
 
 			//linear stuff
 			Vector3 linearVelocity;

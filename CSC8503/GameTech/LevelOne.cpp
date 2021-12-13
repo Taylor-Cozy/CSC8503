@@ -1,4 +1,6 @@
 #include "LevelOne.h"
+#include "../CSC8503Common/Spring.h"
+#include "../CSC8503Common/SpringConstraint.h"
 
 void LevelOne::InitWorld()
 {
@@ -19,13 +21,22 @@ void LevelOne::InitWorld()
 	AddFloorToWorld(Vector3(0, -2, -90));
 	AddCubeToWorld(Vector3(20, 2, -80), Vector3(1, 2, 90), false, 0, 0);
 	AddCubeToWorld(Vector3(-20, 2, -90), Vector3(1, 2, 100), false, 0, 0);
-	AddCubeToWorld(Vector3(0, 2, 10), Vector3(20, 2, 1), false, 0, 0);
+	//AddCubeToWorld(Vector3(0, 2, 10), Vector3(20, 2, 1), false, 0, 0);
 	AddCubeToWorld(Vector3(0, 2, -190), Vector3(20, 2, 1), false, 0, 0);
+
+	GameObject* paddle = AddCubeToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), false);
+	paddle->GetPhysicsObject()->SetGravity(false);
+	Spring* s = new Spring(0, 10.0f);
+	Vector3* target = new Vector3(0, 2, 2);
+	SpringConstraint* spc = new SpringConstraint(paddle, target, s);
+	world->AddConstraint(spc);
 
 	GameObject* player = AddSphereToWorld(Vector3(0,2,0), 1.0f, 5.0f, true);
 	player->SetLayer(1);
 	player->GetRenderObject()->SetDefaultTexture(playerTex);
 	world->AddLayerConstraint(Vector2(-1, 99));
+
+
 	//InitDefaultFloor();
 
 	//AddSphereToWorld(Vector3(0, 5, 0), 1.0f);
