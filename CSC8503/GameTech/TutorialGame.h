@@ -41,7 +41,7 @@ namespace NCL {
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool rubber = false, bool hollow = false);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB = false, float inverseMass = 10.0f);
+			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB = false, float inverseMass = 10.0f, int layer = 1, bool isTrigger = false);
 			
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 
@@ -73,6 +73,8 @@ namespace NCL {
 			OGLMesh*	sphereMesh	= nullptr;
 			OGLTexture* basicTex	= nullptr;
 			OGLShader*	basicShader = nullptr;
+
+			OGLTexture* playerTex	= nullptr;
 
 			//Coursework Meshes
 			OGLMesh*	charMeshA	= nullptr;

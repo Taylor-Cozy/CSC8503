@@ -111,12 +111,12 @@ public:
 		m->UpdateGame(dt);
 
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
-			*newState = new Game(g);
+			*newState = new Game(f);
 			return PushdownResult::Push;
 		}
 
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
-			*newState = new Game(f);
+			*newState = new Game(g);
 			return PushdownResult::Push;
 		}
 
@@ -376,7 +376,7 @@ int main() {
 	MainMenu* m = new MainMenu();
 	PushdownMachine p = new Menu(m, g, f);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+	while (w->UpdateWindow()) { //&& !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 		//DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
@@ -396,11 +396,11 @@ int main() {
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		//if (!p.Update(dt)) {
-		//	return 0;
-		//}
-
-		g->UpdateGame(dt);
+		if (!p.Update(dt)) {
+			return 0;
+		}
+		//f->UpdateGame(dt);
+		//g->UpdateGame(dt);
 	}
 	Window::DestroyGameWindow();
 }

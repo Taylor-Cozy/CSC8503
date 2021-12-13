@@ -21,7 +21,7 @@ and the forces that are added to objects to change those positions
 
 PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
 	applyGravity	= false;
-	useBroadPhase	= false;	
+	useBroadPhase	= true;	
 	dTOffset		= 0.0f;
 	globalDamping	= 0.995f;
 	linearDamping	= 0.4f;
@@ -337,12 +337,14 @@ void PhysicsSystem::BroadPhase() {
 				// if the same pair is in another quadtree node together etc
 				info.a = min((*i).object, (*j).object);
 				info.b = max((*i).object, (*j).object);
-				broadphaseCollisions.insert(info);
+				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer())) {
+					broadphaseCollisions.insert(info);
+				}
 			}
 		}
 	});
 
-	tree.DebugDraw();
+	//tree.DebugDraw();
 }
 
 /*
@@ -355,7 +357,13 @@ void PhysicsSystem::NarrowPhase() {
 		CollisionDetection::CollisionInfo info = *i;
 		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
 			info.framesLeft = numCollisionFrames;
-			ImpulseResolveCollision(*info.a, *info.b, info.point);
+			if (!(info.a->IsTrigger() || info.b->IsTrigger())) {
+				ImpulseResolveCollision(*info.a, *info.b, info.point);	
+			}
+
+			info.a->OnCollisionBegin(info.b);
+			info.b->OnCollisionBegin(info.a);
+
 			//ResolveSpringCollision(*info.a, *info.b, info.point);
 			allCollisions.insert(info); // insert into our main set
 		}

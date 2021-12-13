@@ -5,6 +5,7 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Common/TextureLoader.h"
 #include "../CSC8503Common/PositionConstraint.h"
+#include "../CSC8503Common/OrientationConstraint.h"
 #include "StateGameObject.h"
 #include "../../Common/Quaternion.h"
 using namespace NCL;
@@ -54,6 +55,7 @@ void TutorialGame::InitialiseAssets() {
 
 	basicTex	= (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+	playerTex = (OGLTexture*)TextureLoader::LoadAPITexture("smile.png");
 
 	InitCamera();
 	InitWorld();
@@ -76,7 +78,7 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
-
+	Debug::SetRenderer(renderer);
 	switch (state) {
 	case PLAY: UpdateGameWorld(dt); break;
 	case PAUSE: UpdatePauseScreen(dt); break;
@@ -219,6 +221,25 @@ void TutorialGame::LockedObjectMovement() {
 	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT)) {
 	//	lockedObject->GetPhysicsObject()->AddForce(Vector3(0,-10,0));
 	//}
+
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::UP)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.1);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::DOWN)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.1);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::LEFT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.1);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::RIGHT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.1);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.1);
+	}
+	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
+		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.1);
+	}
 }
 
 void TutorialGame::DebugObjectMovement() {
@@ -279,47 +300,57 @@ void TutorialGame::InitWorld() {
 	//GameObject* b = AddCubeToWorld(Vector3(10, 1.5f, 0), Vector3(1, 1, 1));
 	//b->GetTransform().SetOrientation(Quaternion(0.25f, 0, 0, 1.0f));
 
-	AddCubeToWorld(Vector3(10, 2, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 4, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 6, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 8, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 10, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 12, 0), Vector3(1, 1, 1));
+	//AddCubeToWorld(Vector3(10, 2, 0), Vector3(1, 1, 1));
+	//AddCubeToWorld(Vector3(10, 4, 0), Vector3(1, 1, 1));
+	//AddCubeToWorld(Vector3(10, 6, 0), Vector3(1, 1, 1));
+	//AddCubeToWorld(Vector3(10, 8, 0), Vector3(1, 1, 1));
+	//AddCubeToWorld(Vector3(10, 10, 0), Vector3(1, 1, 1));
+	AddCubeToWorld(Vector3(10, 12, 0), Vector3(1, 1, 1), true);
+
+	// Floor
+	AddCubeToWorld(Vector3(0, -2, 0), Vector3(20, 2, 100), false, 0, 0);
 
 	//AddSphereToWorld(Vector3(0, 5, 0), 1.0f);
 	//AddSphereToWorld(Vector3(10, 5, 0), 1.0f);
 
-	AddCapsuleToWorld(Vector3(0, 5, 0), 3.0f, 1.5f);
-	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
+	world->AddLayerConstraint(Vector2(0, 0));
+	world->AddLayerConstraint(Vector2(-1, 0));
+
+	//AddCapsuleToWorld(Vector3(0, 5, 0), 3.0f, 1.5f);
+	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	//InitGameExamples();
-	InitDefaultFloor();
-	BridgeConstraintTest();
+	//InitDefaultFloor();
+	//BridgeConstraintTest();
 	//testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
 }
 
 void TutorialGame::BridgeConstraintTest() {
-	Vector3 cubeSize = Vector3(8, 8, 8);
+	Vector3 cubeSize = Vector3(2, 1, 8);
 
 	float invCubeMass = 5;
-	int numLinks = 10;
-	float maxDistance = 30;
-	float cubeDistance = 20;
+	int numLinks = 20;
+	float maxDistance = 6;
+	float cubeDistance = 5;
 
 	Vector3 startPos = Vector3(-100, 200, 0);
 
-	GameObject* start = AddCubeToWorld(startPos + Vector3(), cubeSize, 0);
-	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2) * cubeDistance, 0, 0), cubeSize, 0);
+	GameObject* start = AddCubeToWorld(startPos + Vector3(), cubeSize, 0, 0);
+	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2) * cubeDistance, 0, 0), cubeSize, 0, 0);
 
 	GameObject* previous = start;
 
 	for (int i = 0; i < numLinks; ++i) {
-		GameObject* block = AddCubeToWorld(startPos + Vector3((i + 1) * cubeDistance, 0, 0), cubeSize, invCubeMass);
+		GameObject* block = AddCubeToWorld(startPos + Vector3((i + 1) * cubeDistance, 0, 0), cubeSize, 1, invCubeMass);
 		PositionConstraint* constraint = new PositionConstraint(previous, block, maxDistance);
+		OrientationConstraint* orientCon = new OrientationConstraint(previous, block, Vector3(0, 0, 0));
 		world->AddConstraint(constraint);
+		world->AddConstraint(orientCon);
 		previous = block;
 	}
 	PositionConstraint* constraint = new PositionConstraint(previous, end, maxDistance);
+	OrientationConstraint* orientCon = new OrientationConstraint(previous, end, Vector3(0, 0, 0));
 	world->AddConstraint(constraint);
+	world->AddConstraint(orientCon);
 }
 
 /*
@@ -330,7 +361,7 @@ A single function to add a large immoveable cube to the bottom of our world
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
-	Vector3 floorSize	= Vector3(100, 2, 100);
+	Vector3 floorSize	= Vector3(20, 2, 100);
 	AABBVolume* volume	= new AABBVolume(floorSize);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
@@ -345,7 +376,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	world->AddGameObject(floor);
-
+	floor->SetLayer(0);
 	return floor;
 }
 
@@ -410,7 +441,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	return capsule;
 }
 
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass) {
+GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger) {
 	GameObject* cube = new GameObject("Cube");
 	if (OBB) {
 		OBBVolume* volume = new OBBVolume(dimensions);
@@ -434,6 +465,9 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	cube->GetPhysicsObject()->SetElasticity(0.2f);
 
 	world->AddGameObject(cube);
+
+	cube->SetLayer(layer);
+	cube->SetTrigger(isTrigger);
 
 	return cube;
 }
@@ -689,24 +723,5 @@ void TutorialGame::MoveSelectedObject() {
 			}
 		}
 	}
-	
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::UP)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.1);
-	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::DOWN)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.1);
-	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::LEFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.1);
-	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::RIGHT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.1);
-	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.1);
-	}
-	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.1);
-	}
-	
+
 }

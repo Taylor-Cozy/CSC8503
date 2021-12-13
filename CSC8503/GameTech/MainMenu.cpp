@@ -10,6 +10,8 @@ void MainMenu::InitWorld()
 
 void MainMenu::UpdateGame(float dt)
 {
+	Debug::SetRenderer(renderer);
+
 	renderer->DrawString("Screwball Scramble", Vector2(22, 30), Debug::MAGENTA, 30.0f);
 	renderer->DrawString("Press 1 - Level One", Vector2(30, 50), Debug::WHITE, 20.0f);
 	renderer->DrawString("Press 2 - Level Two", Vector2(30, 55), Debug::WHITE, 20.0f);

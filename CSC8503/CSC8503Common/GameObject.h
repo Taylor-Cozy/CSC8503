@@ -77,6 +77,9 @@ namespace NCL {
 			void SetLayer(int l) {	layer = l; }
 			int GetLayer() const { return layer; }
 
+			void SetTrigger(bool x) { isTrigger = x; }
+			bool IsTrigger() const { return isTrigger; }
+
 		protected:
 			Transform			transform;
 
@@ -89,6 +92,7 @@ namespace NCL {
 			string	name;
 
 			int layer = 0;
+			bool isTrigger = false;
 
 			Vector3 broadphaseAABB;
 		};

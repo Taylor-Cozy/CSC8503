@@ -1,6 +1,9 @@
 #pragma once
 #include "Constraint.h"
-#include "../../Common/Vector3.cpp"
+#include "../../Common/Vector3.h"
+
+using namespace NCL::Maths;
+
 namespace NCL {
 	namespace CSC8503 {
 		class GameObject;
@@ -8,11 +11,7 @@ namespace NCL {
 		class OrientationConstraint : public Constraint
 		{
 		public:
-			OrientationConstraint(GameObject* a, GameObject* b, Vector3 x) {
-				objectA = a;
-				objectB = b;
-				angle = x;
-			}
+			OrientationConstraint(GameObject* a, GameObject* b, Vector3 x);
 			~OrientationConstraint() {}
 
 			void UpdateConstraint(float dt) override;

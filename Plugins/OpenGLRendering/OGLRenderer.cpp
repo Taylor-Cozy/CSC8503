@@ -291,6 +291,10 @@ void OGLRenderer::DrawDebugStrings() {
 	vector<Vector2> vertTex;
 	vector<Vector4> vertColours;
 
+	if (debugStrings.size() > 100) {
+		bool a = true;
+	}
+
 	for (DebugString&s : debugStrings) {
 		font->BuildVerticesForString(s.text, s.pos, s.colour, s.size, vertPos, vertTex, vertColours);
 	}

@@ -61,6 +61,7 @@ namespace NCL {
 					}
 				}
 			}
+			bool LayerCollides(int layer1, int layer2) const;
 
 		protected:
 			std::vector<GameObject*> gameObjects;
