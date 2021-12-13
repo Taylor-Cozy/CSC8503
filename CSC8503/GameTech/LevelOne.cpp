@@ -23,7 +23,7 @@ void LevelOne::InitWorld()
 	AddCubeToWorld(Vector3(0, 2, -190), Vector3(20, 2, 1), false, 0, 0);
 
 	GameObject* player = AddSphereToWorld(Vector3(0,2,0), 1.0f, 5.0f, true);
-	player->SetLayer(99);
+	player->SetLayer(1);
 	player->GetRenderObject()->SetDefaultTexture(playerTex);
 	world->AddLayerConstraint(Vector2(-1, 99));
 	//InitDefaultFloor();
