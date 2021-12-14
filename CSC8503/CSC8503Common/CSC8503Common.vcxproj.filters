@@ -129,6 +129,18 @@
     <ClInclude Include="SpringConstraint.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Paddle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LockOrientationConstraint.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Pendulum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Checkpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp">
@@ -184,6 +196,15 @@
     </ClCompile>
     <ClCompile Include="SpringConstraint.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Paddle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LockOrientationConstraint.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Pendulum.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

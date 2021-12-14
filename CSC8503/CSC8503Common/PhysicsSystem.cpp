@@ -20,7 +20,7 @@ and the forces that are added to objects to change those positions
 */
 
 PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
-	applyGravity	= false;
+	applyGravity	= true;
 	useBroadPhase	= true;	
 	dTOffset		= 0.0f;
 	globalDamping	= 0.995f;
@@ -266,41 +266,47 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -fullImpulse));
 	physB->ApplyAngularImpulse(Vector3::Cross(relativeB, fullImpulse));
 
+	if (physA->UsesFriction() && physB->UsesFriction()) {
+		// Friction
+		float mu = (physA->GetFriction() + physB->GetFriction()) / 2.0f;
+		Vector3 t = contactVelocity - (p.normal * (Vector3::Dot(contactVelocity, p.normal)));
+		inertiaA = Vector3::Cross(physA->GetInertiaTensor() * Vector3::Cross(relativeA, t), relativeA);
+		inertiaB = Vector3::Cross(physB->GetInertiaTensor() * Vector3::Cross(relativeB, t), relativeB);
+		angularEffect = Vector3::Dot(inertiaA + inertiaB, t);
+		float frictionJ = -(Vector3::Dot(contactVelocity * mu, t)) / (totalMass + angularEffect);
+		Vector3 frictionImpulse = t * frictionJ;
 
-	// Friction
-	float mu = (physA->GetFriction() + physB->GetFriction()) / 2.0f;
-	Vector3 t = contactVelocity - (p.normal * (Vector3::Dot(contactVelocity, p.normal)));
-	inertiaA = Vector3::Cross(physA->GetInertiaTensor() * Vector3::Cross(relativeA, t), relativeA);
-	inertiaB = Vector3::Cross(physB->GetInertiaTensor() * Vector3::Cross(relativeB, t), relativeB);
-	angularEffect = Vector3::Dot(inertiaA + inertiaB, t);
-	float frictionJ = -(Vector3::Dot(contactVelocity * mu, t)) / (totalMass + angularEffect);
-	Vector3 frictionImpulse = t * frictionJ;
+		physA->ApplyLinearImpulse(-frictionImpulse);
+		physB->ApplyLinearImpulse(frictionImpulse);
 
-	physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -frictionImpulse));
-	physB->ApplyAngularImpulse(Vector3::Cross(relativeB, frictionImpulse));
+		physA->ApplyAngularImpulse(Vector3::Cross(relativeA, -frictionImpulse));
+		physB->ApplyAngularImpulse(Vector3::Cross(relativeB, frictionImpulse));
+	}
 }
 
 void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const
 {
-	//a.GetPhysicsObject()->AddForce(Vector3(0, 100, 0));
 
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
 
-	Spring s(0.0f, 2.0f);
-	
-	Vector3 force = p.normal * -(s.GetK() * (p.penetration - s.GetLength()));
+	Vector3 relativeVel = physA->GetLinearVelocity() - physB->GetLinearVelocity();
 
+	Spring s(0.0f, 2.0f);
+	s.SetDamping(0.3f);
+
+	Vector3 force = p.normal * -(s.GetK() * (p.penetration - s.GetLength()));
+	force -= p.normal * s.GetD() * (Vector3::Dot(relativeVel, p.normal));
+
+	
 	//Vector3 force(0, 10, 0);
 
 	//physA->AddForce(force);
 	//physA->AddForceAtPosition(force, p.localA);
 	//physB->AddForceAtPosition(-force, p.localB);
 
-	physA->ApplyLinearImpulse(force);
-	physB->ApplyLinearImpulse(-force);
-	physA->ApplyAngularImpulse(Vector3::Cross(p.localA, force));
-	physA->ApplyAngularImpulse(Vector3::Cross(p.localB, -force));
+	physA->AddForce(force);
+	physB->AddForce(-force);
 }
 
 /*
@@ -358,13 +364,15 @@ void PhysicsSystem::NarrowPhase() {
 		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
 			info.framesLeft = numCollisionFrames;
 			if (!(info.a->IsTrigger() || info.b->IsTrigger())) {
-				ImpulseResolveCollision(*info.a, *info.b, info.point);	
+				if(info.a->GetPhysicsObject()->UseSpringRes() || info.b->GetPhysicsObject()->UseSpringRes())
+					ResolveSpringCollision(*info.a, *info.b, info.point);
+				else
+					ImpulseResolveCollision(*info.a, *info.b, info.point);	
 			}
 
 			info.a->OnCollisionBegin(info.b);
 			info.b->OnCollisionBegin(info.a);
 
-			//ResolveSpringCollision(*info.a, *info.b, info.point);
 			allCollisions.insert(info); // insert into our main set
 		}
 	}

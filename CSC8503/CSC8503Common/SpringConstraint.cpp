@@ -15,8 +15,6 @@ void SpringConstraint::UpdateConstraint(float dt)
 
 		Vector3 impulse = offsetDir * -(spring->GetK() * (offset - spring->GetLength()));
 
-		float a = impulse.Length();
-
 		object->GetPhysicsObject()->ApplyLinearImpulse(impulse * dt);
 	}
 }

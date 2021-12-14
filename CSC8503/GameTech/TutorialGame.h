@@ -35,7 +35,7 @@ namespace NCL {
 			void BridgeConstraintTest();
 	
 			bool SelectObject();
-			void MoveSelectedObject();
+			void MoveSelectedObject(float dt);
 			void DebugObjectMovement();
 			void LockedObjectMovement();
 

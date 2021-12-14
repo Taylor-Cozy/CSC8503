@@ -78,6 +78,12 @@ namespace NCL {
 			bool UsesGravity() const { return useGravity; }
 			void SetGravity(bool k) { useGravity = k; }
 
+			void SetSpringRes(bool k) { useSpringResolution = k; }
+			bool UseSpringRes() const { return useSpringResolution; }
+
+			void SetFriction(bool k) { useFriction = k; }
+			bool UsesFriction() const { return useFriction; }
+
 		protected:
 			const CollisionVolume* volume;
 			Transform*		transform;
@@ -87,11 +93,13 @@ namespace NCL {
 			float friction;
 
 			bool useGravity = true;
+			bool useFriction = true;
 
 			//linear stuff
 			Vector3 linearVelocity;
 			Vector3 force;
 			
+			bool useSpringResolution = false;
 
 			//angular stuff
 			Vector3 angularVelocity;

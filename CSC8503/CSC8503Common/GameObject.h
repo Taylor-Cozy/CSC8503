@@ -15,7 +15,7 @@ namespace NCL {
 		class GameObject	{
 		public:
 			GameObject(string name = "");
-			~GameObject();
+			virtual ~GameObject();
 
 			void SetBoundingVolume(CollisionVolume* vol) {
 				boundingVolume = vol;
@@ -52,6 +52,7 @@ namespace NCL {
 			const string& GetName() const {
 				return name;
 			}
+			void SetName(string k) { name = k; }
 
 			virtual void OnCollisionBegin(GameObject* otherObject) {
 				//std::cout << "OnCollisionBegin event occured!\n";
@@ -59,6 +60,10 @@ namespace NCL {
 
 			virtual void OnCollisionEnd(GameObject* otherObject) {
 				//std::cout << "OnCollisionEnd event occured!\n";
+			}
+
+			virtual void Interact(float dt) {
+				std::cout << "Interacting with " << name << "\n";
 			}
 
 			bool GetBroadphaseAABB(Vector3&outsize) const;
@@ -79,6 +84,7 @@ namespace NCL {
 
 			void SetTrigger(bool x) { isTrigger = x; }
 			bool IsTrigger() const { return isTrigger; }
+
 
 		protected:
 			Transform			transform;
