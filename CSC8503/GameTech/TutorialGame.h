@@ -32,7 +32,7 @@ namespace NCL {
 			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
+			void BridgeConstraintTest(Vector3 cubeSize = Vector3(2, 1, 8), Vector3 startPos = Vector3(-100, 200, 0));
 	
 			bool SelectObject();
 			void MoveSelectedObject(float dt);

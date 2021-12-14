@@ -11,16 +11,8 @@
 
 void LevelOne::InitWorld()
 {
-	//world->AddLayerConstraint(Vector2(0, 1));
 	world->ClearAndErase();
 	physics->Clear();
-
-	//GameObject* a = AddCubeToWorld(Vector3(0, 1.5f, 0), Vector3(1, 1, 1));
-	//a->GetTransform().SetOrientation(Quaternion(0, 0.25f, 0, 1.0f));
-	//GameObject* b = AddCubeToWorld(Vector3(10, 1.5f, 0), Vector3(1, 1, 1));
-	//b->GetTransform().SetOrientation(Quaternion(0.25f, 0, 0, 1.0f));
-
-	//AddCubeToWorld(Vector3(10, 2, 0), Vector3(1, 1, 1), true);
 
 	InitFloor();
 
@@ -28,15 +20,26 @@ void LevelOne::InitWorld()
 	startLine->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
 
 	//GameObject* paddle = AddCubeToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), false, 0.1f);
-	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 10000.0f, 30.0f, new Vector3(0, 2, 2));
-
+	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 20000.0f, 30.0f, new Vector3(0, 2, 2));
+	GameObject* p = AddPaddleToWorld(Vector3(200, -48.5, -190), Vector3(18, 2, 1), Vector3(0, 0.05, 0.8), 15000.0f, 30.0f, new Vector3(200, -48.5, -190));
 	//AddCapsuleToWorld(Vector3(0, 3.5f, -50), 3, 1.5f, 10.0f);
 	AddPendulum(Vector3(0, 20, -50), Vector3(0, 3.5f, -50), 18, 3.0f, 1.5f);
 	AddPendulum(Vector3(0, 20, -80), Vector3(10, 3.5f, -80), 18, 3.0f, 1.5f);
 	AddPendulum(Vector3(0, 20, -110), Vector3(-10, 3.5f, -110), 18, 3.0f, 1.5f);
 
+	BridgeConstraintTest(Vector3(20, 1, 2), Vector3(200, -52, -136));
+
+	GameObject* water = AddCubeToWorld(Vector3(200, -110, -15), Vector3(20, 4, 40), false, 0.0f, 0);
+	water->GetRenderObject()->SetDefaultTexture(NULL);
+	water->GetRenderObject()->SetColour(Vector4(0.51f, 0.84f, 0.93f, 1.0f));
+	water->GetPhysicsObject()->SetSpringRes(true);
+	GameObject* base = AddCubeToWorld(Vector3(200, -116, -15), Vector3(20, 2, 40), false, 0.0f, 0);
+	base->GetPhysicsObject()->SetElasticity(1.5f);
+	base->GetPhysicsObject()->SetFriction(false);
+
+
 	GameObject* player = AddSphereToWorld(Vector3(0,2,0), 1.0f, 50.0f, true);
-	player->GetPhysicsObject()->SetFriction(0.3f);
+	player->GetPhysicsObject()->SetFriction(0.2f);
 	player->SetLayer(1);
 	player->GetRenderObject()->SetDefaultTexture(playerTex);
 	world->AddLayerConstraint(Vector2(-1, 99));
@@ -65,7 +68,7 @@ GameObject* LevelOne::AddPaddleToWorld(const Vector3& position, Vector3 dimensio
 
 	paddle->SetLayer(1);
 
-	Spring* s = new Spring(0, 50.0f);
+	Spring* s = new Spring(0, 20.0f);
 	
 	SpringConstraint* spc = new SpringConstraint((GameObject*)paddle, target, s);
 	world->AddConstraint(spc);
@@ -79,20 +82,67 @@ GameObject* LevelOne::AddPaddleToWorld(const Vector3& position, Vector3 dimensio
 
 void LevelOne::InitFloor()
 {
-	// Start
-	AddFloorToWorld(Vector3(0, -2, -90));
+	// Start -> Checkpoint A
+	//AddFloorToWorld(Vector3(0, -2, -90));
+	AddCubeToWorld(Vector3(0, -2, -70), Vector3(20, 2, 80), false, 0.0f, 0);
 	AddCubeToWorld(Vector3(19, 2, -70), Vector3(1, 2, 80), false, 0, 0); // Side wall
 	AddCubeToWorld(Vector3(-19, 2, -70), Vector3(1, 2, 80), false, 0, 0); // Side wall
-	AddCubeToWorld(Vector3(0, 2, -190), Vector3(20, 2, 1), false, 0, 0); // Back Wall
+
+	GameObject* backwall = AddCubeToWorld(Vector3(80, -27.5, -190.5), Vector3(100, 5, 1), true, 0, 0); // Back Wall
+	GameObject* backwall2 = AddCubeToWorld(Vector3(80, -27.5, -150.5), Vector3(100, 5, 1), true, 0, 0); // Back Wall
+	backwall->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
+	backwall2->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
+
+	GameObject* cpA = AddCubeToWorld(Vector3(80, -32, -170), Vector3(100, 2, 20), true, 0.0f, 0);
+	cpA->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
+	cpA->GetPhysicsObject()->SetFriction(false);
+	cpA->GetRenderObject()->SetColour(Vector4(0.29f, 0.54f, 1.0f, 1.0f));
+	cpA->GetRenderObject()->SetDefaultTexture(NULL);
 
 	// Checkpoint A -> Checkpoint B
-	GameObject* water = AddCubeToWorld(Vector3(120, -2, -170), Vector3(100, 2, 20), true, 0.0f, 0);
-	water->GetPhysicsObject()->SetSpringRes(true);
-	water->GetRenderObject()->SetColour(Debug::BLUE);
-	GameObject* safety = AddCubeToWorld(Vector3(120, -6, -170), Vector3(100, 2, 20), true, 0.0f, 0); // Underneath
-	safety->GetPhysicsObject()->SetElasticity(1.5f);
-	AddCubeToWorld(Vector3(18, -6, -170), Vector3(2, 2, 20), true, 0.0f, 0);
+	//GameObject* water = AddCubeToWorld(Vector3(0, -50, -50), Vector3(20, 2, 100), true, 1.0f, 1);
+	//water->GetPhysicsObject()->SetSpringRes(true);
+	//water->GetRenderObject()->SetColour(Debug::BLUE);
+	//GameObject* safety = AddCubeToWorld(Vector3(120, -6, -170), Vector3(100, 2, 20), true, 0.0f, 0); // Underneath
+	//safety->GetPhysicsObject()->SetElasticity(1.5f);
+	//AddCubeToWorld(Vector3(18, -6, -170), Vector3(2, 2, 20), true, 0.0f, 0);
 
+#pragma region Spikes
+	GameObject* cub1 = AddCubeToWorld(Vector3(30, -15, -170), Vector3(2, 10, 2), true, 0.0f, 0);
+	cub1->GetTransform().SetOrientation(Quaternion(0.0f, 0.25f, -0.15f, 1.0f));
+	cub1->GetPhysicsObject()->SetElasticity(1.5f);
+
+	GameObject* cub2 = AddCubeToWorld(Vector3(50, -25, -180), Vector3(3, 10, 3), true, 0.0f, 0);
+	cub2->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(20.0f, 45.0f, 20.0f));
+	cub2->GetPhysicsObject()->SetElasticity(1.5f);
+
+	GameObject* cub3 = AddCubeToWorld(Vector3(80, -30, -160), Vector3(3, 10, 3), true, 0.0f, 0);
+	cub3->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(-70.0f, 45.0f, 20.0f));
+	cub3->GetPhysicsObject()->SetElasticity(1.5f);
+
+	GameObject* cap1 = AddCapsuleToWorld(Vector3(100, -35, -152), 5.0f, 2.5f, 0.0f);
+	cap1->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(-20.0f, 45.0f, -20.0f));
+	cap1->GetPhysicsObject()->SetElasticity(1.5f);
+
+	GameObject* cap2 = AddCapsuleToWorld(Vector3(80, -30, -180), 5.0f, 2.5f, 0.0f);
+	cap2->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(-20.0f, 45.0f, -20.0f));
+	cap2->GetPhysicsObject()->SetElasticity(1.5f);
+
+	GameObject* cap3 = AddCapsuleToWorld(Vector3(120, -42, -180), 10.0f, 5.0f, 0.0f);
+	cap3->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(80.0f, -10.0f, 0.0f));
+	cap3->GetPhysicsObject()->SetElasticity(1.5f);
+
+	AddSphereToWorld(Vector3(150, -44, -170), 2.0f, 0.0f, true);
+	AddSphereToWorld(Vector3(160, -46, -176), 2.0f, 0.0f, true);
+	AddSphereToWorld(Vector3(160, -46, -164), 2.0f, 0.0f, true);
+	AddSphereToWorld(Vector3(170, -48, -182), 2.0f, 0.0f, true);
+	AddSphereToWorld(Vector3(170, -48, -158), 2.0f, 0.0f, true);
+	AddSphereToWorld(Vector3(170, -48, -170), 2.0f, 0.0f, true);
+#pragma endregion
+
+	GameObject* cpB = AddCubeToWorld(Vector3(198, -52, -170), Vector3(20, 2, 30), true, 0.0f, 0);
+	cpB->GetTransform().SetOrientation(Quaternion(-0.02f, 0.0f, 0.0f, 1.0f));
+	AddCubeToWorld(Vector3(218, -52, -170), Vector3(1, 5, 30), false, 0.0f, 0);
 }
 
 void LevelOne::AddPendulum(Vector3 anchorPosition, Vector3 headPos, float length, float halfHeight, float radius)

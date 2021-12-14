@@ -303,31 +303,39 @@ void TutorialGame::InitWorld() {
 	//testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
 }
 
-void TutorialGame::BridgeConstraintTest() {
-	Vector3 cubeSize = Vector3(2, 1, 8);
+void TutorialGame::BridgeConstraintTest(Vector3 cubeSize, Vector3 startPos) {
 
 	float invCubeMass = 5;
-	int numLinks = 20;
+	int numLinks = 15;
 	float maxDistance = 6;
 	float cubeDistance = 5;
+	float stepDown = 2.0f;
+	float horizontalDist = sqrt((cubeDistance * cubeDistance) - (stepDown * stepDown));
 
-	Vector3 startPos = Vector3(-100, 200, 0);
-
-	GameObject* start = AddCubeToWorld(startPos + Vector3(), cubeSize, 0, 0);
-	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2) * cubeDistance, 0, 0), cubeSize, 0, 0);
+	GameObject* start = AddCubeToWorld(startPos + Vector3(), cubeSize, true, 0, 0);
+	start->GetPhysicsObject()->SetElasticity(0.8f);
+	start->GetPhysicsObject()->SetFriction(0.05f);
+	start->GetTransform().SetOrientation(Quaternion(0.05f, 0, 0, 1.0));
+	GameObject* end = AddCubeToWorld(startPos + Vector3(0, -(numLinks + 2) * stepDown - 20.0f, (numLinks + 2) * horizontalDist), cubeSize, true, 0, 0);
+	end->GetPhysicsObject()->SetElasticity(0.8f);
+	end->GetPhysicsObject()->SetFriction(0.05f);
+	end->GetTransform().SetOrientation(Quaternion(0.05f, 0, 0, 1.0));
 
 	GameObject* previous = start;
 
 	for (int i = 0; i < numLinks; ++i) {
-		GameObject* block = AddCubeToWorld(startPos + Vector3((i + 1) * cubeDistance, 0, 0), cubeSize, 1, invCubeMass);
+		GameObject* block = AddCubeToWorld(startPos + Vector3(0, -(i + 1) * stepDown, (i + 1) * horizontalDist), cubeSize, true, invCubeMass);
+		block->GetPhysicsObject()->SetElasticity(0.8f);
+		block->GetPhysicsObject()->SetFriction(0.05f);
+		block->GetTransform().SetOrientation(Quaternion(0.05f, 0, 0, 1.0));
 		PositionConstraint* constraint = new PositionConstraint(previous, block, maxDistance);
-		OrientationConstraint* orientCon = new OrientationConstraint(previous, block, Vector3(0, 0, 0));
+		OrientationConstraint* orientCon = new OrientationConstraint(previous, block, Vector3(5, 0, 0));
 		world->AddConstraint(constraint);
 		world->AddConstraint(orientCon);
 		previous = block;
 	}
 	PositionConstraint* constraint = new PositionConstraint(previous, end, maxDistance);
-	OrientationConstraint* orientCon = new OrientationConstraint(previous, end, Vector3(0, 0, 0));
+	OrientationConstraint* orientCon = new OrientationConstraint(previous, end, Vector3(5, 0, 0));
 	world->AddConstraint(constraint);
 	world->AddConstraint(orientCon);
 }

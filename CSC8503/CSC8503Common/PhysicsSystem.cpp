@@ -20,7 +20,7 @@ and the forces that are added to objects to change those positions
 */
 
 PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
-	applyGravity	= true;
+	applyGravity	= false;
 	useBroadPhase	= true;	
 	dTOffset		= 0.0f;
 	globalDamping	= 0.995f;
@@ -295,18 +295,23 @@ void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, Collisi
 	Spring s(0.0f, 2.0f);
 	s.SetDamping(0.3f);
 
-	Vector3 force = p.normal * -(s.GetK() * (p.penetration - s.GetLength()));
+	Vector3 force = p.normal * (s.GetK() * (p.penetration - s.GetLength()));
 	force -= p.normal * s.GetD() * (Vector3::Dot(relativeVel, p.normal));
 
+	Vector3 test(0, 10000, 0);
+
+	physA->AddForce(force * 10000);
+	physB->AddForce(-force);
 	
+	//physA->ApplyLinearImpulse(force);
+	//physB->ApplyLinearImpulse(-force);
+
 	//Vector3 force(0, 10, 0);
 
 	//physA->AddForce(force);
 	//physA->AddForceAtPosition(force, p.localA);
 	//physB->AddForceAtPosition(-force, p.localB);
 
-	physA->AddForce(force);
-	physB->AddForce(-force);
 }
 
 /*
