@@ -292,16 +292,16 @@ void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, Collisi
 
 	Vector3 relativeVel = physA->GetLinearVelocity() - physB->GetLinearVelocity();
 
-	Spring s(0.0f, 2.0f);
+	Spring s(0.0f, 500.0f);
 	s.SetDamping(0.3f);
 
 	Vector3 force = p.normal * (s.GetK() * (p.penetration - s.GetLength()));
-	force -= p.normal * s.GetD() * (Vector3::Dot(relativeVel, p.normal));
+	force -= p.normal * s.GetD() * (Vector3::Dot(p.normal, relativeVel));
 
-	Vector3 test(0, 10000, 0);
-
-	physA->AddForce(force * 10000);
-	physB->AddForce(-force);
+	physA->AddForce(-force);
+	physB->AddForce(force);
+	Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + (force.Normalised() * 10), Debug::RED);
+	Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + Vector3(10,0,0), Debug::BLUE);
 	
 	//physA->ApplyLinearImpulse(force);
 	//physB->ApplyLinearImpulse(-force);
