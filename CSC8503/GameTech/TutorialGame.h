@@ -1,15 +1,19 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "../CSC8503Common/PhysicsSystem.h"
+#include "../CSC8503Common/Player.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		enum GameState {
 			PLAY,
-			PAUSE
+			PAUSE,
+			WIN,
+			RESET
 		};
 
 		class StateGameObject;
+		class Checkpoint;
 		class TutorialGame		{
 		public:
 			TutorialGame();
@@ -17,6 +21,11 @@ namespace NCL {
 
 			virtual void UpdateGame(float dt);
 			void SetState(GameState s) { state = s; }
+			void ResetGame() {
+				state = RESET;
+			}
+
+			bool Win() const { return player->Win(); }
 
 		protected:
 			void InitialiseAssets();
@@ -46,8 +55,11 @@ namespace NCL {
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 
 			GameObject* AddPlayerToWorld(const Vector3& position);
+			Player* AddPlayerBallToWorld(const Vector3& position);
+			Checkpoint* AddCheckpointToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger);
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
+
 
 			StateGameObject* AddStateObjectWorld(const Vector3& position);
 			StateGameObject* testStateObject;
@@ -60,6 +72,7 @@ namespace NCL {
 
 			void UpdateGameWorld(float dt);
 			void UpdatePauseScreen(float dt);
+			void UpdateWinScreen(float dt);
 
 			bool useGravity;
 			bool inSelectionMode;
@@ -88,6 +101,8 @@ namespace NCL {
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
 			}
+
+			Player* player;
 
 		};
 	}

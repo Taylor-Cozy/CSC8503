@@ -6,34 +6,32 @@
 #include "../CSC8503Common/PositionConstraint.h"
 #include "../CSC8503Common/OrientationConstraint.h"
 #include "../CSC8503Common/Pendulum.h"
+#include "../CSC8503Common/Player.h"
+#include "../CSC8503Common/SpinningConstraint.h"
+#include "../CSC8503Common/Checkpoint.h"
 
 void LevelOne::InitWorld()
 {
 	world->ClearAndErase();
 	physics->Clear();
 
+	player = AddPlayerBallToWorld(Vector3(0, 2, 0));
+
 	InitFloor();
 
 	GameObject* startLine = AddCubeToWorld(Vector3(0, 0.1f, -10), Vector3(20, 0.2f, 3), false, 0, 0, true);
 	startLine->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
+	startLine->SetName("start");
 
 	//GameObject* paddle = AddCubeToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), false, 0.1f);
-	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 10000.0f, 30.0f, new Vector3(0, 2, 2));
+	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 15000.0f, 30.0f, new Vector3(0, 2, 2));
 	GameObject* p = AddPaddleToWorld(Vector3(197, -48.5, -190), Vector3(18, 2, 1), Vector3(0, 0.05, 0.8), 10000.0f, 30.0f, new Vector3(197, -48.5, -190));
 	//AddCapsuleToWorld(Vector3(0, 3.5f, -50), 3, 1.5f, 10.0f);
 	AddPendulum(Vector3(0, 20, -50), Vector3(0, 3.5f, -50), 18, 3.0f, 1.5f);
 	AddPendulum(Vector3(0, 20, -80), Vector3(10, 3.5f, -80), 18, 3.0f, 1.5f);
 	AddPendulum(Vector3(0, 20, -110), Vector3(-10, 3.5f, -110), 18, 3.0f, 1.5f);
 
-	BridgeConstraintTest(Vector3(20, 1, 2), Vector3(200, -52, -136));
-
-
-	GameObject* player = AddSphereToWorld(Vector3(0,2,0), 1.0f, 50.0f, true);
-	player->SetName("player");
-	player->GetPhysicsObject()->SetFriction(0.2f);
-	player->SetLayer(1);
-	player->GetRenderObject()->SetDefaultTexture(playerTex);
-	player->SetDynamic(true);
+	BridgeConstraintTest(Vector3(20, 1, 2.2), Vector3(200, -52, -136));
 
 	GameObject* water = AddCubeToWorld(Vector3(200, -112, -35), Vector3(20, 4, 20), true, 0.0f, 0);
 	water->GetPhysicsObject()->SetSpringRes(true);
@@ -42,11 +40,42 @@ void LevelOne::InitWorld()
 	water->GetRenderObject()->SetColour(Vector4(0.51f, 0.84f, 0.93f, 1.0f));
 
 	GameObject* base = AddCubeToWorld(Vector3(200, -118, -36), Vector3(20, 2, 20), true, 0.0f, 0);
-	base->GetPhysicsObject()->SetElasticity(1.5f);
+	base->GetPhysicsObject()->SetElasticity(1.0f);
 	base->GetPhysicsObject()->SetFriction(false);
 	base->GetTransform().SetOrientation(Quaternion(0.05f, 0.0f, 0.0f, 1.0f));
 
-	AddCubeToWorld(Vector3(200, -115, 15), Vector3(20, 2, 30), false, 0.0, 0);
+	GameObject* finishBlock = AddCubeToWorld(Vector3(200, -115, 15), Vector3(20, 2, 30), false, 0.0, 0);
+	finishBlock->SetName("finish");
+
+	GameObject* pickup1 = AddBonusToWorld(Vector3(0, 2, -65));
+	GameObject* pickup2 = AddBonusToWorld(Vector3(0, 2, -95));
+	GameObject* pickup3 = AddBonusToWorld(Vector3(0, 2, -125));
+
+	pickup1->SetTrigger(true);
+	pickup2->SetTrigger(true);
+	pickup3->SetTrigger(true);
+
+	pickup1->GetPhysicsObject()->SetGravity(false);
+	pickup2->GetPhysicsObject()->SetGravity(false);
+	pickup3->GetPhysicsObject()->SetGravity(false);
+
+	pickup1->SetName("coin");
+	pickup2->SetName("coin");
+	pickup3->SetName("coin");
+
+	SpinningConstraint* s1 = new SpinningConstraint(pickup1, Vector3(0, 0.2, 0));
+	SpinningConstraint* s2 = new SpinningConstraint(pickup2, Vector3(0, 0.2, 0));
+	SpinningConstraint* s3 = new SpinningConstraint(pickup3, Vector3(0, 0.2, 0));
+
+	world->AddConstraint(s1);
+	world->AddConstraint(s2);
+	world->AddConstraint(s3);
+
+	Checkpoint* a = AddCheckpointToWorld(Vector3(198, -50, -185), Vector3(20, 0.5f, 5), true, 0.0f, 0, true);
+	a->SetCheckpoint(Vector3(200, -49, -186));
+	a->GetRenderObject()->SetColour(Debug::GREEN);
+
+	state = PLAY;
 
 	world->BuildStaticList();
 }

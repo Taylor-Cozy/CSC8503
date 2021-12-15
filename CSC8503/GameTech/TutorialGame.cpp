@@ -8,6 +8,7 @@
 #include "../CSC8503Common/OrientationConstraint.h"
 #include "StateGameObject.h"
 #include "../../Common/Quaternion.h"
+#include "../CSC8503Common/Checkpoint.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -82,6 +83,20 @@ void TutorialGame::UpdateGame(float dt) {
 	switch (state) {
 	case PLAY: UpdateGameWorld(dt); break;
 	case PAUSE: UpdatePauseScreen(dt); break;
+	case WIN: UpdateWinScreen(dt); break;
+	case RESET: {
+		InitCamera();
+		InitWorld();
+		player->Reset();
+		selectionObject = nullptr;
+		break;
+	}
+	}
+
+
+	if (player) {
+		renderer->DrawString("Time Taken: " + std::to_string(player->GetTimeTaken()) + "s", Vector2(5, 10), Debug::RED);
+		renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(5, 15), Debug::RED);
 	}
 
 	renderer->Update(dt);
@@ -141,6 +156,13 @@ void TutorialGame::UpdatePauseScreen(float dt)
 	renderer->DrawString("Press Esc to return to Main Menu.", Vector2(5, 95), Debug::WHITE, 20.0f);
 }
 
+void TutorialGame::UpdateWinScreen(float dt)
+{
+	renderer->DrawString("YOU WIN", Vector2(5, 80), Debug::MAGENTA, 30.0f);
+	renderer->DrawString("Press R to Restart.", Vector2(5, 90), Debug::WHITE, 20.0f);
+	renderer->DrawString("Press Esc to return to Main Menu.", Vector2(5, 95), Debug::WHITE, 20.0f);
+}
+
 void TutorialGame::UpdateKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
 		InitWorld(); //We can reset the simulation at any time with F1
@@ -156,6 +178,13 @@ void TutorialGame::UpdateKeys() {
 		useGravity = !useGravity; //Toggle gravity!
 		physics->UseGravity(useGravity);
 	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+		player->GetPhysicsObject()->SetAngularVelocity(Vector3());
+		player->GetPhysicsObject()->SetLinearVelocity(Vector3());
+		player->GetTransform().SetPosition(player->GetCheckpoint());
+	}
+
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
@@ -540,6 +569,58 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position) {
 	return character;
 }
 
+Player* NCL::CSC8503::TutorialGame::AddPlayerBallToWorld(const Vector3& position)
+{
+	Player* player = new Player();
+	Vector3 sphereSize = Vector3(1.0f, 1.0f, 1.0f);
+	SphereVolume* volume = new SphereVolume(1.0f);
+	player->SetBoundingVolume((CollisionVolume*)volume);
+
+	player->GetTransform()
+		.SetScale(sphereSize)
+		.SetPosition(position);
+
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), sphereMesh, basicTex, basicShader));
+	player->SetPhysicsObject(new PhysicsObject(&player->GetTransform(), player->GetBoundingVolume()));
+	player->GetPhysicsObject()->SetInverseMass(10.0f);
+	player->GetPhysicsObject()->InitSphereInertia();
+	player->GetPhysicsObject()->SetElasticity(0.9f);
+	player->GetPhysicsObject()->SetFriction(0.2f);
+	world->AddGameObject(player);
+
+	player->SetName("player");
+	player->SetLayer(1);
+
+	player->GetRenderObject()->SetDefaultTexture(playerTex);
+	player->SetDynamic(true);
+
+	return player;
+}
+
+Checkpoint* TutorialGame::AddCheckpointToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger)
+{
+	Checkpoint* cube = new Checkpoint();
+	OBBVolume* volume = new OBBVolume(dimensions);
+	cube->SetBoundingVolume((CollisionVolume*)volume);
+	cube->GetTransform()
+		.SetPosition(position)
+		.SetScale(dimensions * 2);
+
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
+	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+
+	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
+	cube->GetPhysicsObject()->InitCubeInertia();
+	cube->GetPhysicsObject()->SetElasticity(0.2f);
+
+	world->AddGameObject(cube);
+
+	cube->SetLayer(layer);
+	cube->SetTrigger(isTrigger);
+
+	return cube;
+}
+
 GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position) {
 	float meshSize		= 3.0f;
 	float inverseMass	= 0.5f;
@@ -567,7 +648,7 @@ GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position) {
 GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 	GameObject* apple = new GameObject();
 
-	SphereVolume* volume = new SphereVolume(0.25f);
+	SphereVolume* volume = new SphereVolume(1.0f);
 	apple->SetBoundingVolume((CollisionVolume*)volume);
 	apple->GetTransform()
 		.SetScale(Vector3(0.25, 0.25, 0.25))
@@ -578,6 +659,8 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 
 	apple->GetPhysicsObject()->SetInverseMass(1.0f);
 	apple->GetPhysicsObject()->InitSphereInertia();
+
+	apple->GetRenderObject()->SetColour(Vector4(1.0f, 0.84f, 0.0f, 1.0f));
 
 	world->AddGameObject(apple);
 

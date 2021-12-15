@@ -55,6 +55,34 @@ using namespace CSC8503;
 //	}
 //}
 
+class WinGame : public PushdownState {
+public:
+	WinGame(TutorialGame* g) : g(g) {};
+
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		g->UpdateGame(dt);
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			g->ResetGame();
+			g->UpdateGame(dt);
+			return PushdownResult::Pop;
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+			return PushdownResult::Reset;
+		}
+
+		return PushdownResult::NoChange;
+	}
+
+	void OnAwake() override {
+		g->SetState(WIN);
+	}
+
+protected:
+	TutorialGame* g;
+};
+
 class PauseGame : public PushdownState {
 public:
 	PauseGame(TutorialGame* g) : g(g) {};
@@ -86,6 +114,12 @@ public:
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		g->UpdateGame(dt);
+
+		if (g->Win()) {
+			*newState = new WinGame(g);
+			return PushdownResult::Push;
+		}
+		
 
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) {
 			*newState = new PauseGame(g);
