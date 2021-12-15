@@ -7,8 +7,6 @@
 #include "../CSC8503Common/OrientationConstraint.h"
 #include "../CSC8503Common/Pendulum.h"
 
-
-
 void LevelOne::InitWorld()
 {
 	world->ClearAndErase();
@@ -20,8 +18,8 @@ void LevelOne::InitWorld()
 	startLine->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
 
 	//GameObject* paddle = AddCubeToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), false, 0.1f);
-	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 20000.0f, 30.0f, new Vector3(0, 2, 2));
-	GameObject* p = AddPaddleToWorld(Vector3(200, -48.5, -190), Vector3(18, 2, 1), Vector3(0, 0.05, 0.8), 15000.0f, 30.0f, new Vector3(200, -48.5, -190));
+	AddPaddleToWorld(Vector3(0, 2, 2), Vector3(10, 2, 1), Vector3(0, 0, -1), 10000.0f, 30.0f, new Vector3(0, 2, 2));
+	GameObject* p = AddPaddleToWorld(Vector3(197, -48.5, -190), Vector3(18, 2, 1), Vector3(0, 0.05, 0.8), 10000.0f, 30.0f, new Vector3(197, -48.5, -190));
 	//AddCapsuleToWorld(Vector3(0, 3.5f, -50), 3, 1.5f, 10.0f);
 	AddPendulum(Vector3(0, 20, -50), Vector3(0, 3.5f, -50), 18, 3.0f, 1.5f);
 	AddPendulum(Vector3(0, 20, -80), Vector3(10, 3.5f, -80), 18, 3.0f, 1.5f);
@@ -29,20 +27,28 @@ void LevelOne::InitWorld()
 
 	BridgeConstraintTest(Vector3(20, 1, 2), Vector3(200, -52, -136));
 
-	GameObject* water = AddCubeToWorld(Vector3(200, -110, -15), Vector3(20, 4, 40), false, 0.0f, 0);
-	water->GetRenderObject()->SetDefaultTexture(NULL);
-	water->GetRenderObject()->SetColour(Vector4(0.51f, 0.84f, 0.93f, 1.0f));
-	water->GetPhysicsObject()->SetSpringRes(true);
-	GameObject* base = AddCubeToWorld(Vector3(200, -116, -15), Vector3(20, 2, 40), false, 0.0f, 0);
-	base->GetPhysicsObject()->SetElasticity(1.5f);
-	base->GetPhysicsObject()->SetFriction(false);
-
 
 	GameObject* player = AddSphereToWorld(Vector3(0,2,0), 1.0f, 50.0f, true);
+	player->SetName("player");
 	player->GetPhysicsObject()->SetFriction(0.2f);
 	player->SetLayer(1);
 	player->GetRenderObject()->SetDefaultTexture(playerTex);
-	world->AddLayerConstraint(Vector2(-1, 99));
+	player->SetDynamic(true);
+
+	GameObject* water = AddCubeToWorld(Vector3(200, -112, -35), Vector3(20, 4, 20), true, 0.0f, 0);
+	water->GetPhysicsObject()->SetSpringRes(true);
+	water->GetTransform().SetOrientation(Quaternion(0.05f, 0.0f, 0.0f, 1.0f));
+	water->GetRenderObject()->SetDefaultTexture(NULL);
+	water->GetRenderObject()->SetColour(Vector4(0.51f, 0.84f, 0.93f, 1.0f));
+
+	GameObject* base = AddCubeToWorld(Vector3(200, -118, -36), Vector3(20, 2, 20), true, 0.0f, 0);
+	base->GetPhysicsObject()->SetElasticity(1.5f);
+	base->GetPhysicsObject()->SetFriction(false);
+	base->GetTransform().SetOrientation(Quaternion(0.05f, 0.0f, 0.0f, 1.0f));
+
+	AddCubeToWorld(Vector3(200, -115, 15), Vector3(20, 2, 30), false, 0.0, 0);
+
+	world->BuildStaticList();
 }
 
 GameObject* LevelOne::AddPaddleToWorld(const Vector3& position, Vector3 dimensions, Vector3 normal, float force, float springForce, Vector3* target)
@@ -63,7 +69,7 @@ GameObject* LevelOne::AddPaddleToWorld(const Vector3& position, Vector3 dimensio
 	paddle->GetPhysicsObject()->SetElasticity(2.0f);
 	paddle->GetPhysicsObject()->SetGravity(false);
 	paddle->GetPhysicsObject()->SetFriction(false);
-	
+	paddle->SetDynamic(true);
 	world->AddGameObject(paddle);
 
 	paddle->SetLayer(1);
@@ -92,7 +98,7 @@ void LevelOne::InitFloor()
 	GameObject* backwall2 = AddCubeToWorld(Vector3(80, -27.5, -150.5), Vector3(100, 5, 1), true, 0, 0); // Back Wall
 	backwall->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
 	backwall2->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
-
+	backwall->SetName("test");
 	GameObject* cpA = AddCubeToWorld(Vector3(80, -32, -170), Vector3(100, 2, 20), true, 0.0f, 0);
 	cpA->GetTransform().SetOrientation(Quaternion(0.0f, 0.0f, -0.1f, 1.0f));
 	cpA->GetPhysicsObject()->SetFriction(false);
@@ -162,10 +168,12 @@ void LevelOne::AddPendulum(Vector3 anchorPosition, Vector3 headPos, float length
 
 	pend->GetPhysicsObject()->SetInverseMass(10.0f);
 	pend->GetPhysicsObject()->InitCubeInertia();
+	pend->SetDynamic(true);
 
 	world->AddGameObject(pend);
 
 	GameObject* anchor = AddCubeToWorld(anchorPosition, Vector3(1, 1, 1), false, 0.0f, 0);
+	
 	
 	PositionConstraint* constraint = new PositionConstraint(anchor, pend, length);
 	LockOrientationConstraint* constraintO = new LockOrientationConstraint(pend, pend->GetTransform().GetOrientation());

@@ -93,7 +93,7 @@ void PhysicsSystem::Update(float dt) {
 	}
 
 	while(dTOffset >= realDT) {
-		IntegrateAccel(realDT); //Update accelerations from external forces
+
 		if (useBroadPhase) {
 			BroadPhase();
 			NarrowPhase();
@@ -101,6 +101,8 @@ void PhysicsSystem::Update(float dt) {
 		else {
 			BasicCollisionDetection();
 		}
+		// TODO
+		IntegrateAccel(realDT); //Update accelerations from external forces
 
 		//This is our simple iterative solver - 
 		//we just run things multiple times, slowly moving things forward
@@ -203,8 +205,12 @@ void PhysicsSystem::BasicCollisionDetection() {
 
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
-				//ResolveSpringCollision(*info.a, *info.b, info.point);
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				if((*i)->GetPhysicsObject()->UseSpringRes() || (*j)->GetPhysicsObject()->UseSpringRes())
+					ResolveSpringCollision(*info.a, *info.b, info.point);
+				else
+				{
+					ImpulseResolveCollision(*info.a, *info.b, info.point);
+				}
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -292,25 +298,17 @@ void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, Collisi
 
 	Vector3 relativeVel = physA->GetLinearVelocity() - physB->GetLinearVelocity();
 
-	Spring s(0.0f, 500.0f);
+	Spring s(0.0f, 2.0f);
 	s.SetDamping(0.3f);
 
-	Vector3 force = p.normal * (s.GetK() * (p.penetration - s.GetLength()));
-	force -= p.normal * s.GetD() * (Vector3::Dot(p.normal, relativeVel));
+	Vector3 force = p.normal * -(s.GetK() * (p.penetration - s.GetLength()));
+	force -= p.normal * s.GetD() * (Vector3::Dot(relativeVel, p.normal));
 
-	physA->AddForce(-force);
-	physB->AddForce(force);
-	Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + (force.Normalised() * 10), Debug::RED);
-	Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + Vector3(10,0,0), Debug::BLUE);
-	
-	//physA->ApplyLinearImpulse(force);
-	//physB->ApplyLinearImpulse(-force);
-
-	//Vector3 force(0, 10, 0);
-
-	//physA->AddForce(force);
-	//physA->AddForceAtPosition(force, p.localA);
-	//physB->AddForceAtPosition(-force, p.localB);
+	physA->AddForce(force);
+	physB->AddForce(-force);
+	//Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + (force.Normalised() * 10), Debug::RED);
+	//Debug::DrawLine(b.GetTransform().GetPosition(), b.GetTransform().GetPosition() + Vector3(10,0,0), Debug::BLUE);
+	//Debug::DrawLine(a.GetTransform().GetPosition(), a.GetTransform().GetPosition() + Vector3(20,0,0), Debug::GREEN);
 
 }
 
@@ -330,16 +328,19 @@ void PhysicsSystem::BroadPhase() {
 	std::vector<GameObject*>::const_iterator first;
 	std::vector<GameObject*>::const_iterator last;
 	gameWorld.GetObjectIterators(first, last);
-
+	int test = 0;
 	for (auto i = first; i != last; ++i) {
 		Vector3 halfSizes;
-		if (!(*i)->GetBroadphaseAABB(halfSizes))
-			continue;
+		if (!(*i)->GetBroadphaseAABB(halfSizes)) {
+				continue;
+		}
 
 		Vector3 pos = (*i)->GetTransform().GetPosition();
 		tree.Insert(*i, pos, halfSizes);
+		test++;
 	}
 
+	// Test all dynamic objects against eachother
 	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
 		CollisionDetection::CollisionInfo info;
 		for (auto i = data.begin(); i != data.end(); ++i) {
@@ -348,14 +349,43 @@ void PhysicsSystem::BroadPhase() {
 				// if the same pair is in another quadtree node together etc
 				info.a = min((*i).object, (*j).object);
 				info.b = max((*i).object, (*j).object);
-				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer())) {
+				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer()) && !(!info.a->IsDynamic() && !info.b->IsDynamic())) {
 					broadphaseCollisions.insert(info);
 				}
 			}
 		}
 	});
 
-	//tree.DebugDraw();
+	// Static and dynamic list
+
+	//QuadTree<GameObject*>* staticTree = gameWorld.GetStaticTree();
+	//std::list<QuadTreeEntry<GameObject*>> list;
+	//for (auto i = first; i != last; ++i) {
+	//	if ((*i)->IsDynamic()) {
+
+	//	}
+	//}
+
+	//staticTree->DebugDraw(Debug::BLUE);
+	// Test dynamic against static
+	//tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
+	//	CollisionDetection::CollisionInfo info;
+	//	for (auto i = data.begin(); i != data.end(); ++i) {
+	//		list.clear();
+	//		if(i->object->GetName() == "player")
+	//			staticTree->GetContentsAtNode(i->object, i->pos, i->size, list);
+	//		for (auto j = list.begin(); j != list.end(); j++) {
+	//			j->object->GetRenderObject()->SetColour(Debug::RED);
+	//			info.a = min((*i).object, (*j).object);
+	//			info.b = max((*i).object, (*j).object);
+	//			if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer())) {
+	//				broadphaseCollisions.insert(info);
+	//			}
+	//		}
+	//	}
+	//});
+
+	//std::cout << broadphaseCollisions.size() << std::endl;
 }
 
 /*

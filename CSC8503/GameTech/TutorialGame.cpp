@@ -328,6 +328,7 @@ void TutorialGame::BridgeConstraintTest(Vector3 cubeSize, Vector3 startPos) {
 		block->GetPhysicsObject()->SetElasticity(0.8f);
 		block->GetPhysicsObject()->SetFriction(0.05f);
 		block->GetTransform().SetOrientation(Quaternion(0.05f, 0, 0, 1.0));
+		block->SetDynamic(true);
 		PositionConstraint* constraint = new PositionConstraint(previous, block, maxDistance);
 		OrientationConstraint* orientCon = new OrientationConstraint(previous, block, Vector3(5, 0, 0));
 		world->AddConstraint(constraint);
@@ -429,7 +430,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 }
 
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger) {
-	GameObject* cube = new GameObject("Cube");
+	GameObject* cube = new GameObject();
 	if (OBB) {
 		OBBVolume* volume = new OBBVolume(dimensions);
 		cube->SetBoundingVolume((CollisionVolume*)volume);

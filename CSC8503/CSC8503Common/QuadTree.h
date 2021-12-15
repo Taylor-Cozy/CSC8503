@@ -43,7 +43,7 @@ namespace NCL {
 				delete[] children;
 			}
 
-			void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) {
+			void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize, string name = "") {
 				if(!CollisionDetection::AABBTest(objectPos, position, objectSize, size))
 					return;
 
@@ -69,6 +69,22 @@ namespace NCL {
 				}
 			}
 
+			void GetContentsAtNode(T& object, const Vector3& objectPos, const Vector3& objectSize, std::list<QuadTreeEntry<T>>& list) {
+				if (!CollisionDetection::AABBTest(objectPos, position, objectSize, size))
+					return;
+
+				if (children) {
+					for (int i = 0; i < 8; ++i) {
+						children[i].GetContentsAtNode(object, objectPos, objectSize, list);
+					}
+				}
+				else { // Currently a leaf node, can just expand
+					for (auto i : contents) {
+						list.push_back(i);
+					}
+				}
+			}
+
 			void Split() {
 				Vector3 halfSize = size / 2.0f;
 				children = new QuadTreeNode<T>[8];
@@ -82,27 +98,27 @@ namespace NCL {
 				children[7] = QuadTreeNode<T>(position + Vector3(	 halfSize.x, -halfSize.y, -halfSize.z), halfSize);
 			}
 
-			void DebugDraw() {
+			void DebugDraw(Vector4 colour, float time = 0.01f) {
 				Vector3 s = size;
 				
-				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(s.x, s.y, s.z), Vector4(1,0,0,1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, -s.y, s.z), Vector4(1,0,0,1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, s.z), Vector4(1,0,0,1), 0.01f);
-				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, s.y, s.z), Vector4(1,0,0,1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(s.x, s.y, s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, -s.y, s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, s.z), colour, time);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, s.y, s.z), colour, time);
 
-				Debug::DrawLine(position + Vector3(-s.x, s.y, -s.z), position + Vector3(s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, s.y, -s.z), position + Vector3(s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, -s.y, -s.z), position + Vector3(-s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(-s.x, -s.y, -s.z), position + Vector3(-s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, s.y, -s.z), position + Vector3(s.x, s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, s.y, -s.z), position + Vector3(s.x, -s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, -s.z), position + Vector3(-s.x, -s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, -s.z), position + Vector3(-s.x, s.y, -s.z), colour, time);
 
-				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(-s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
-				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, -s.z), Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(position + Vector3(-s.x, s.y, s.z), position + Vector3(-s.x, s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, s.y, s.z), position + Vector3(s.x, s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(s.x, -s.y, s.z), position + Vector3(s.x, -s.y, -s.z), colour, time);
+				Debug::DrawLine(position + Vector3(-s.x, -s.y, s.z), position + Vector3(-s.x, -s.y, -s.z), colour, time);
 
 				if (children) {
 					for (int i = 0; i < 8; i++) {
-						children[i].DebugDraw();
+						children[i].DebugDraw(colour);
 					}
 				}
 			}
@@ -147,12 +163,16 @@ namespace NCL {
 			~QuadTree() {
 			}
 
-			void Insert(T object, const Vector3& pos, const Vector3& size) {
-				root.Insert(object, pos, size, maxDepth, maxSize);
+			void Insert(T object, const Vector3& pos, const Vector3& size, string name = "") {
+				root.Insert(object, pos, size, maxDepth, maxSize, name);
 			}
 
-			void DebugDraw() {
-				root.DebugDraw();
+			void GetContentsAtNode(T object, const Vector3& objectPos, const Vector3& objectSize, std::list<QuadTreeEntry<T>>& list) {
+				root.GetContentsAtNode(object, objectPos, objectSize, list);
+			}
+
+			void DebugDraw(Vector4 colour) {
+				root.DebugDraw(colour);
 			}
 
 			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc  func) {
