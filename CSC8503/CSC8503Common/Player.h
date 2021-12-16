@@ -23,6 +23,15 @@ namespace NCL {
             bool Win() const { return finish; }
             void Reset();
 
+			bool HasKey() const { return key; }
+
+			void IncreaseSpeed(float speedIncrease, float duration) {
+				curSpeed += speedIncrease;
+				powerupTime += duration;
+			};
+
+			float GetSpeed() const { return speed; }
+
         protected:
             bool start = false;
             bool finish = false;
@@ -30,6 +39,10 @@ namespace NCL {
             int score = 0;
             Vector3 spawnPos;
             Vector3 checkpoint;
+			bool key = false;
+			float powerupTime = 0.0f;
+			float speed = 50.0f;
+			float curSpeed = 50.0f;
         };
     }
 }

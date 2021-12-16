@@ -151,6 +151,7 @@
     <ClInclude Include="Pendulum.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PositionConstraint.h" />
+    <ClInclude Include="SpeedUp.h" />
     <ClInclude Include="SphereVolume.h" />
     <ClInclude Include="CollisionVolume.h" />
     <ClInclude Include="CollisionDetection.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="PushdownState.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="SpeedUp.cpp" />
     <ClCompile Include="SpinningConstraint.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
     <ClCompile Include="StateAI.cpp" />

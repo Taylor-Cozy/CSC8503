@@ -55,6 +55,7 @@ void LevelTwo::InitWalls()
 		}
 	}
 
+
 	//// Top wall
 	//for (int i = 0; i < 18; ++i) {
 	//	AddCubeToWorld(Vector3((offset * i) + 10, 10, 10), Vector3(10, 10, 10), false, 0.0f, 0);

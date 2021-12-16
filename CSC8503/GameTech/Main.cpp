@@ -20,41 +20,41 @@
 using namespace NCL;
 using namespace CSC8503;
 
-//void TestStateMachine() {
-//	StateMachine* testMachine = new StateMachine();
-//	int data = 0;
-//
-//	State* A = new State([&](float dt)->void {
-//			std::cout << "I'm state A!\n";
-//			data++;
-//		}
-//	);
-//
-//	State* B = new State([&](float dt)->void {
-//			std::cout << "I'm state B!\n";
-//			data--;
-//		}
-//	);
-//
-//	StateTransition* stateAB = new StateTransition(A, B, [&](void)->bool {
-//			return data > 10;
-//		}
-//	);
-//
-//	StateTransition* stateBA = new StateTransition(B, A, [&](void)->bool {
-//			return data < 0;
-//		}
-//	);
-//
-//	testMachine->AddState(A);
-//	testMachine->AddState(B);
-//	testMachine->AddTransition(stateAB);
-//	testMachine->AddTransition(stateBA);
-//
-//	for (int i = 0; i < 100; ++i) {
-//		testMachine->Update(1.0f);
-//	}
-//}
+void TestStateMachine() {
+	StateMachine* testMachine = new StateMachine();
+	int data = 0;
+
+	State* A = new State([&](float dt)->void {
+			std::cout << "I'm state A!\n";
+			data++;
+		}
+	);
+
+	State* B = new State([&](float dt)->void {
+			std::cout << "I'm state B!\n";
+			data--;
+		}
+	);
+
+	StateTransition* stateAB = new StateTransition(A, B, [&](void)->bool {
+			return data > 10;
+		}
+	);
+
+	StateTransition* stateBA = new StateTransition(B, A, [&](void)->bool {
+			return data < 0;
+		}
+	);
+
+	testMachine->AddState(A);
+	testMachine->AddState(B);
+	testMachine->AddTransition(stateAB);
+	testMachine->AddTransition(stateBA);
+
+	for (int i = 0; i < 100; ++i) {
+		testMachine->Update(1.0f);
+	}
+}
 
 class WinGame : public PushdownState {
 public:
@@ -245,14 +245,14 @@ void TestPathfinding() {
 
 	NavigationPath outPath;
 
-	Vector3 startPos(80, 0, 10);
-	Vector3 endPos(80, 0, 80);
+	Vector3 startPos(20, 0, 20);
+	Vector3 endPos(320, 0, 320);
 
 	bool found = grid.FindPath(startPos, endPos, outPath);
 
 	Vector3 pos;
 	while (outPath.PopWaypoint(pos)) {
-		testNodes.push_back(pos);
+		testNodes.push_back(pos + Vector3(10, 0, 10));
 	}
 }
 
@@ -404,7 +404,7 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 	
-	//TestPathfinding();
+	TestPathfinding();
 	//TestBehaviourTree();
 
 	TutorialGame* g = new TutorialGame();
@@ -414,7 +414,7 @@ int main() {
 	PushdownMachine p = new Menu(m, g, f, h);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow()) { //&& !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-		//DisplayPathfinding();
+		DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

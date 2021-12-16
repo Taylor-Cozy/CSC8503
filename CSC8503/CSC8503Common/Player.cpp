@@ -27,12 +27,24 @@ void Player::OnCollisionBegin(GameObject* other)
 	if (other->GetName() == "checkpoint") {
 		checkpoint = ((Checkpoint*)other)->GetCheckpoint();
 	}
+
+	if (other->GetName() == "key") {
+		key = true;
+		other->SetActive(false);
+	}
 }
 
 void Player::Update(float dt)
 {
 	if (start && !finish) {
 		timeTaken += dt;
+	}
+
+	if (powerupTime > 0.0f) {
+		powerupTime -= dt;
+	}
+	else {
+		curSpeed = speed;
 	}
 }
 
