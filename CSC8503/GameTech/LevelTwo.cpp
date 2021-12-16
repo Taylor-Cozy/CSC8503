@@ -11,7 +11,7 @@ void LevelTwo::InitWorld()
 	world->ClearAndErase();
 	physics->Clear();
 
-	player = AddPlayerBallToWorld(Vector3(20, 2, 20));
+	player = AddPlayerBallToWorld(Vector3(30, 2, 330));
 
 	InitFloor();
 	InitWalls();
@@ -42,14 +42,15 @@ void LevelTwo::InitWalls()
 		std::cout << x << std::endl;
 	}
 
-	int offset = 20;
+	int offset = stoi(lines[0]);
+	float cubeOffset = offset / 2.0f;
 
 	for (int i = 3; i < lines.size(); ++i) {
 		for (int j = 0; j < lines[3].length(); ++j) {
 			if (lines[i][j] == 'x') {
-				GameObject* x = AddCubeToWorld(Vector3((offset * (j)) + 10, 10, (offset * (i-3)) + 10), Vector3(10, 10, 10), false, 0.0f, 0);
+				GameObject* x = AddCubeToWorld(Vector3((offset * (j)) + cubeOffset , cubeOffset, (offset * (i-3)) + cubeOffset), Vector3(1, 1, 1) * cubeOffset, false, 0.0f, 0);
 				x->GetRenderObject()->SetColour(Vector4((1.0f * j) / (float)stoi(lines[1]), 0.2f, (1.0f * i) / (float)stoi(lines[2]), 1.0f));
-				x->GetRenderObject()->SetDefaultTexture(NULL);
+				//x->GetRenderObject()->SetDefaultTexture(NULL);
 			}
 		}
 	}

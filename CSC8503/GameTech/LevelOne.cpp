@@ -6,6 +6,7 @@
 #include "../CSC8503Common/PositionConstraint.h"
 #include "../CSC8503Common/OrientationConstraint.h"
 #include "../CSC8503Common/Pendulum.h"
+#include "../CSC8503Common/Twister.h"
 #include "../CSC8503Common/Player.h"
 #include "../CSC8503Common/SpinningConstraint.h"
 #include "../CSC8503Common/Checkpoint.h"
@@ -46,6 +47,9 @@ void LevelOne::InitWorld()
 
 	GameObject* finishBlock = AddCubeToWorld(Vector3(200, -115, 15), Vector3(20, 2, 30), false, 0.0, 0);
 	finishBlock->SetName("finish");
+
+	GameObject* twisterBlock = AddTwistBlock(Vector3(200, -105.5f, -35), Vector3(10, 2, 0.5f));
+	twisterBlock->GetTransform().SetOrientation(Quaternion(0.05f, 0.0f, 0.0f, 1.0f));
 
 	GameObject* pickup1 = AddBonusToWorld(Vector3(0, 2, -65));
 	GameObject* pickup2 = AddBonusToWorld(Vector3(0, 2, -95));
@@ -208,5 +212,32 @@ void LevelOne::AddPendulum(Vector3 anchorPosition, Vector3 headPos, float length
 	LockOrientationConstraint* constraintO = new LockOrientationConstraint(pend, pend->GetTransform().GetOrientation());
 	world->AddConstraint(constraint);
 	world->AddConstraint(constraintO);
+}
+
+GameObject* LevelOne::AddTwistBlock(Vector3 position, Vector3 size)
+{
+	Twister* tw = new Twister();
+	OBBVolume* volume = new OBBVolume(size);
+	
+	tw->SetBoundingVolume((CollisionVolume*)volume);
+
+	tw->GetTransform()
+		.SetPosition(position)
+		.SetScale(size * 2);
+
+	tw->SetRenderObject(new RenderObject(&tw->GetTransform(), cubeMesh, basicTex, basicShader));
+	tw->SetPhysicsObject(new PhysicsObject(&tw->GetTransform(), tw->GetBoundingVolume()));
+
+	tw->GetPhysicsObject()->SetInverseMass(0.1f);
+	tw->GetPhysicsObject()->InitCubeInertia();
+	tw->GetPhysicsObject()->SetElasticity(1.0f);
+	tw->GetPhysicsObject()->SetGravity(false);
+	tw->GetPhysicsObject()->SetFriction(false);
+	tw->SetDynamic(true);
+	world->AddGameObject(tw);
+
+	tw->SetLayer(1);
+
+	return tw;
 }
 

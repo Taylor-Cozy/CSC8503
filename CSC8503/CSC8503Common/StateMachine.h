@@ -17,7 +17,7 @@ namespace NCL {
 			~StateMachine();
 
 			void AddState(State* s);
-			void AddTransition(StateTransition* t);
+			void AddTransition(StateTransition* t, int heirarchalGroup = 0);
 
 			void Update(float dt);
 

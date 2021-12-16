@@ -25,7 +25,8 @@ void StateMachine::AddState(State* s) {
 	}
 }
 
-void StateMachine::AddTransition(StateTransition* t) {
+void StateMachine::AddTransition(StateTransition* t, int heirarchalGroup) {
+
 	allTransitions.insert(std::make_pair(t->GetSourceState(), t));
 }
 

@@ -147,6 +147,12 @@
     <ClInclude Include="SpinningConstraint.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="StateAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Twister.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp">
@@ -217,6 +223,12 @@
     </ClCompile>
     <ClCompile Include="SpinningConstraint.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="StateAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Twister.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
