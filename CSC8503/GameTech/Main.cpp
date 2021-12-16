@@ -8,6 +8,7 @@
 
 #include "TutorialGame.h"
 #include "LevelOne.h"
+#include "LevelTwo.h"
 #include "MainMenu.h"
 #include "../CSC8503Common/BehaviourAction.h"
 #include "../CSC8503Common/BehaviourSequence.h"
@@ -139,7 +140,7 @@ protected:
 
 class Menu : public PushdownState {
 public:
-	Menu(MainMenu* m, TutorialGame* g, TutorialGame* f) : m(m), g(g), f(f) {};
+	Menu(MainMenu* m, TutorialGame* g, TutorialGame* f, TutorialGame* h) : m(m), g(g), f(f), h(h) {};
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		m->UpdateGame(dt);
@@ -150,7 +151,7 @@ public:
 		}
 
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
-			*newState = new Game(g);
+			*newState = new Game(h);
 			return PushdownResult::Push;
 		}
 
@@ -164,6 +165,7 @@ public:
 protected:
 	TutorialGame* g;
 	TutorialGame* f;
+	TutorialGame* h;
 	MainMenu* m;
 };
 
@@ -407,8 +409,9 @@ int main() {
 
 	TutorialGame* g = new TutorialGame();
 	LevelOne* f = new LevelOne();
+	LevelTwo* h = new LevelTwo();
 	MainMenu* m = new MainMenu();
-	PushdownMachine p = new Menu(m, g, f);
+	PushdownMachine p = new Menu(m, g, f, h);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow()) { //&& !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 		//DisplayPathfinding();

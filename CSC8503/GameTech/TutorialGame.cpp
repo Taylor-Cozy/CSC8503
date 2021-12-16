@@ -93,6 +93,11 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 	}
 
+	Debug::DrawLine(Vector3(), Vector3(0, 20, 0), Debug::RED);
+	Debug::DrawLine(Vector3(), Vector3(360, 0, 0), Debug::RED);
+	Debug::DrawLine(Vector3(360, 0, 0), Vector3(360, 0, 360), Debug::RED);
+	Debug::DrawLine(Vector3(360, 0, 360), Vector3(0, 0, 360), Debug::RED);
+	Debug::DrawLine(Vector3(0, 0, 360), Vector3(0, 0, 0), Debug::RED);
 
 	if (player) {
 		renderer->DrawString("Time Taken: " + std::to_string(player->GetTimeTaken()) + "s", Vector2(5, 10), Debug::RED);

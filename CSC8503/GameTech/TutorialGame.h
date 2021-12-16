@@ -25,7 +25,11 @@ namespace NCL {
 				state = RESET;
 			}
 
-			bool Win() const { return player->Win(); }
+			bool Win() const { 
+				if(player)
+					return player->Win(); 
+				return false;
+			}
 
 		protected:
 			void InitialiseAssets();

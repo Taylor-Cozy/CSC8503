@@ -343,7 +343,7 @@ void PhysicsSystem::BroadPhase() {
 		tree.Insert(*i, pos, halfSizes);
 		test++;
 	}
-	std::cout << "Dynamic " << test << std::endl;
+	//std::cout << "Dynamic " << test << std::endl;
 	// Test all dynamic objects against eachother
 	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
 		CollisionDetection::CollisionInfo info;
