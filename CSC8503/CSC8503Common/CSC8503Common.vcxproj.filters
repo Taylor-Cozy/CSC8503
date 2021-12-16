@@ -156,6 +156,9 @@
     <ClInclude Include="SpeedUp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Gate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpeedUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

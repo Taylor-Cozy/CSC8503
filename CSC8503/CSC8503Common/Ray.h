@@ -27,9 +27,13 @@ namespace NCL {
 
 			Vector3 GetDirection() const {return direction;	}
 
+			void SetLayer(int k) { layer = k; }
+			int GetLayer() const { return layer; }
+
 		protected:
 			Vector3 position;	//World space position
 			Vector3 direction;	//Normalised world space direction
+			int layer = -1;
 		};
 	}
 }

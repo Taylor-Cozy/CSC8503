@@ -400,7 +400,7 @@ int main() {
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
-	srand(time(0));
+	srand(time(NULL));
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 	
@@ -414,7 +414,7 @@ int main() {
 	PushdownMachine p = new Menu(m, g, f, h);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow()) { //&& !w->GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-		DisplayPathfinding();
+		//DisplayPathfinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

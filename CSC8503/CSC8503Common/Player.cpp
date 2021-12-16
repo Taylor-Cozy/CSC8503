@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Checkpoint.h"
+#include "StateAI.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -30,7 +31,15 @@ void Player::OnCollisionBegin(GameObject* other)
 
 	if (other->GetName() == "key") {
 		key = true;
+		if (other->IsActive()) {
+			score += 1000;
+		}
 		other->SetActive(false);
+	}
+
+	if (other->GetName() == "enemy") {
+		transform.SetPosition(spawnPos);
+		((StateAI*)other)->ReturnToSpawn();
 	}
 }
 

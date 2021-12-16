@@ -30,7 +30,9 @@ namespace NCL {
 				powerupTime += duration;
 			};
 
-			float GetSpeed() const { return speed; }
+			float GetSpeed() const { return curSpeed; }
+
+            void SetSpawn(Vector3 l) { spawnPos = l; }
 
         protected:
             bool start = false;

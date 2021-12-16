@@ -140,6 +140,7 @@
     <ClInclude Include="BehaviourSequence.h" />
     <ClInclude Include="CapsuleVolume.h" />
     <ClInclude Include="Checkpoint.h" />
+    <ClInclude Include="Gate.h" />
     <ClInclude Include="LockOrientationConstraint.h" />
     <ClInclude Include="NavigationGrid.h" />
     <ClInclude Include="NavigationMap.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameWorld.cpp" />
+    <ClCompile Include="Gate.cpp" />
     <ClCompile Include="LockOrientationConstraint.cpp" />
     <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMesh.cpp" />

@@ -14,10 +14,13 @@ GameWorld::GameWorld()	{
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
 	worldIDCounter		= 0;
+
+	navGrid = new NavigationGrid("TestGrid1.txt");
 }
 
 GameWorld::~GameWorld()	{
 	delete tree;
+	delete navGrid;
 }
 
 void GameWorld::Clear() {
@@ -86,7 +89,7 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 		bool skip = false;
 		for (auto layers : layerConstraints) {
 			//   Ray             Ignore objects
-			if (layers.x == -1 && layers.y == i->GetLayer()) { // check
+			if (layers.x == r.GetLayer() && layers.y == i->GetLayer()) { // check
 				skip = true;
 			}
 		}

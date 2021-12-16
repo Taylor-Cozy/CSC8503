@@ -3,6 +3,7 @@
 #include "Ray.h"
 #include "CollisionDetection.h"
 #include "QuadTree.h"
+#include "NavigationGrid.h"
 namespace NCL {
 		class Camera;
 		using Maths::Ray;
@@ -67,6 +68,8 @@ namespace NCL {
 			void BuildStaticList();
 			QuadTree<GameObject*>* GetStaticTree() const { return tree; }
 
+			NavigationGrid* GetNavGrid() const { return navGrid; }
+
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -74,6 +77,8 @@ namespace NCL {
 			QuadTree<GameObject*>* tree;
 
 			Camera* mainCamera;
+
+			NavigationGrid* navGrid;
 
 			bool	shuffleConstraints;
 			bool	shuffleObjects;

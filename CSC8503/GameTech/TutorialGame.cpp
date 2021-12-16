@@ -17,7 +17,7 @@ TutorialGame::TutorialGame()	{
 	renderer	= new GameTechRenderer(*world);
 	physics		= new PhysicsSystem(*world);
 
-	forceMagnitude	= 10.0f;
+	forceMagnitude	= 30.0f;
 	useGravity		= false;
 	inSelectionMode = false;
 
@@ -809,21 +809,39 @@ void TutorialGame::MoveSelectedObject(float dt) {
 		selectionObject->Interact(dt);
 
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::UP)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -1) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::DOWN)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 1) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::LEFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(-1, 0, 0) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::RIGHT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(1, 0, 0) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SHIFT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -1, 0) * forceMagnitude * 0.1);
 	}
 	if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::SPACE)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.1);
+		if (selectionObject->GetName() == "player")
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * ((Player*)selectionObject)->GetSpeed() * 0.1);
+		else
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 1, 0) * forceMagnitude * 0.1);
 	}
 }
