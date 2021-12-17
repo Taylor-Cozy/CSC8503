@@ -29,10 +29,31 @@ PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
 }
 
 PhysicsSystem::~PhysicsSystem()	{
+	delete staticTree;
 }
 
 void PhysicsSystem::SetGravity(const Vector3& g) {
 	gravity = g;
+}
+
+
+void PhysicsSystem::BuildStaticList()
+{
+	std::vector<GameObject*>::const_iterator first;
+	std::vector<GameObject*>::const_iterator last;
+	gameWorld.GetObjectIterators(first, last);
+	staticTree = new QuadTree<GameObject*>(Vector3(1024, 1024, 1024), 7, 6);
+
+	int test = 0;
+	for (auto i = first; i != last; ++i) {
+		(*i)->UpdateBroadphaseAABB();
+		Vector3 halfSizes;
+		if (!(*i)->GetBroadphaseAABB(halfSizes) || (*i)->IsDynamic())
+			continue;
+		Vector3 pos = (*i)->GetTransform().GetPosition();
+		staticTree->Insert(*i, pos, halfSizes, (*i)->GetName());
+		test++;
+	}
 }
 
 /*
@@ -332,7 +353,7 @@ void PhysicsSystem::BroadPhase() {
 	std::vector<GameObject*>::const_iterator first;
 	std::vector<GameObject*>::const_iterator last;
 	gameWorld.GetObjectIterators(first, last);
-	int test = 0;
+
 	for (auto i = first; i != last; ++i) {
 		Vector3 halfSizes;
 		if (!(*i)->GetBroadphaseAABB(halfSizes) || !(*i)->IsDynamic()) {
@@ -341,37 +362,11 @@ void PhysicsSystem::BroadPhase() {
 
 		Vector3 pos = (*i)->GetTransform().GetPosition();
 		tree.Insert(*i, pos, halfSizes);
-		test++;
 	}
-	//std::cout << "Dynamic " << test << std::endl;
-	// Test all dynamic objects against eachother
-	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
-		CollisionDetection::CollisionInfo info;
-		for (auto i = data.begin(); i != data.end(); ++i) {
-			for (auto j = std::next(i); j != data.end(); ++j) {
-				//is this pair of items already in the collision set - 
-				// if the same pair is in another quadtree node together etc
-				info.a = min((*i).object, (*j).object);
-				info.b = max((*i).object, (*j).object);
-				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer()) && !(!info.a->IsDynamic() && !info.b->IsDynamic())) {
-					broadphaseCollisions.insert(info);
-				}
-			}
-		}
-	});
-
-	// Static and dynamic list
-
-	QuadTree<GameObject*>* staticTree = gameWorld.GetStaticTree();
-	std::list<QuadTreeEntry<GameObject*>> list;
-	//for (auto i = first; i != last; ++i) {
-	//	if ((*i)->IsDynamic()) {
-
-	//	}
-	//}
 
 	//staticTree->DebugDraw(Debug::BLUE);
 	// Test dynamic against static
+	std::list<QuadTreeEntry<GameObject*>> list;
 	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
 		CollisionDetection::CollisionInfo info;
 		for (auto i = data.begin(); i != data.end(); ++i) {
@@ -382,6 +377,22 @@ void PhysicsSystem::BroadPhase() {
 				info.a = min((*i).object, (*j).object);
 				info.b = max((*i).object, (*j).object);
 				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer())) {
+					broadphaseCollisions.insert(info);
+				}
+			}
+		}
+		});
+
+	// Test all dynamic objects against eachother
+	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
+		CollisionDetection::CollisionInfo info;
+		for (auto i = data.begin(); i != data.end(); ++i) {
+			for (auto j = std::next(i); j != data.end(); ++j) {
+				//is this pair of items already in the collision set - 
+				// if the same pair is in another quadtree node together etc
+				info.a = min((*i).object, (*j).object);
+				info.b = max((*i).object, (*j).object);
+				if (gameWorld.LayerCollides(info.a->GetLayer(), info.b->GetLayer()) && !(!info.a->IsDynamic() && !info.b->IsDynamic())) {
 					broadphaseCollisions.insert(info);
 				}
 			}

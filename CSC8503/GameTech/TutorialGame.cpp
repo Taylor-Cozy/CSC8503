@@ -343,7 +343,7 @@ void TutorialGame::InitWorld() {
 
 	BridgeConstraintTest();
 
-	world->BuildStaticList();
+	physics->BuildStaticList();
 }
 
 void TutorialGame::BridgeConstraintTest(Vector3 cubeSize, Vector3 startPos) {

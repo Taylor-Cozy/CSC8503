@@ -81,7 +81,7 @@ void LevelOne::InitWorld()
 
 	state = PLAY;
 
-	world->BuildStaticList();
+	physics->BuildStaticList();
 }
 
 GameObject* LevelOne::AddPaddleToWorld(const Vector3& position, Vector3 dimensions, Vector3 normal, float force, float springForce, Vector3* target)

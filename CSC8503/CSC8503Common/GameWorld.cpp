@@ -19,7 +19,6 @@ GameWorld::GameWorld()	{
 }
 
 GameWorld::~GameWorld()	{
-	delete tree;
 	delete navGrid;
 }
 
@@ -152,21 +151,4 @@ bool GameWorld::LayerCollides(int layer1, int layer2) const
 	return true;
 }
 
-void GameWorld::BuildStaticList()
-{
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-	GetObjectIterators(first, last);
-	tree = new QuadTree<GameObject*>(Vector3(1024, 1024, 1024), 7, 6);
 
-	int test = 0;
-	for (auto i = first; i != last; ++i) {
-		(*i)->UpdateBroadphaseAABB();
-		Vector3 halfSizes;
-		if (!(*i)->GetBroadphaseAABB(halfSizes) || (*i)->IsDynamic())
-			continue;
-		Vector3 pos = (*i)->GetTransform().GetPosition();
-		tree->Insert(*i, pos, halfSizes, (*i)->GetName());
-		test++;
-	}
-}

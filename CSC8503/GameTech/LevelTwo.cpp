@@ -50,7 +50,7 @@ void LevelTwo::InitWorld()
 
 	state = PLAY;
 
-	world->BuildStaticList();
+	physics->BuildStaticList();
 
 	enemy->SetPlayer(player);
 }

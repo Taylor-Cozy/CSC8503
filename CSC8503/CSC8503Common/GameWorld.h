@@ -64,17 +64,12 @@ namespace NCL {
 			}
 			bool LayerCollides(int layer1, int layer2) const;
 
-
-			void BuildStaticList();
-			QuadTree<GameObject*>* GetStaticTree() const { return tree; }
-
 			NavigationGrid* GetNavGrid() const { return navGrid; }
 
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
 			std::vector<Vector2> layerConstraints;
-			QuadTree<GameObject*>* tree;
 
 			Camera* mainCamera;
 
