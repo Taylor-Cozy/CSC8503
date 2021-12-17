@@ -44,15 +44,13 @@ void PhysicsSystem::BuildStaticList()
 	gameWorld.GetObjectIterators(first, last);
 	staticTree = new QuadTree<GameObject*>(Vector3(1024, 1024, 1024), 7, 6);
 
-	int test = 0;
 	for (auto i = first; i != last; ++i) {
-		(*i)->UpdateBroadphaseAABB();
+		(*i)->UpdateBroadphaseAABB(); // Force update
 		Vector3 halfSizes;
 		if (!(*i)->GetBroadphaseAABB(halfSizes) || (*i)->IsDynamic())
 			continue;
 		Vector3 pos = (*i)->GetTransform().GetPosition();
 		staticTree->Insert(*i, pos, halfSizes, (*i)->GetName());
-		test++;
 	}
 }
 
