@@ -126,7 +126,6 @@ bool CollisionDetection::RayCapsuleIntersection(const Ray& r, const Transform& w
 	if (!hit)
 		return false;
 
-	// Get closes point along line https://stackoverflow.com/questions/51905268/how-to-find-closest-point-on-line
 	Vector3 capsuleDir = pointA - pointB;
 	float capsuleLineLength = capsuleDir.Length();
 	capsuleDir.Normalise();
@@ -658,7 +657,6 @@ bool CollisionDetection::SphereCapsuleIntersection(
 	Vector3 pointA = worldTransformA.GetPosition() + (worldTransformA.GetOrientation() * (Vector3(0, 1, 0) * (volumeA.GetHalfHeight() - volumeA.GetRadius())));
 	Vector3 pointB = worldTransformA.GetPosition() - (worldTransformA.GetOrientation() * (Vector3(0, 1, 0) * (volumeA.GetHalfHeight() - volumeA.GetRadius())));
 
-	// Get closes point along line https://stackoverflow.com/questions/51905268/how-to-find-closest-point-on-line
 	Vector3 capsuleDir = pointA - pointB;
 	float capsuleLineLength = capsuleDir.Length();
 	capsuleDir.Normalise();
@@ -677,8 +675,6 @@ bool CollisionDetection::SphereCapsuleIntersection(
 	//Debug::DrawLine(collisionInfo.point.localA, collisionInfo.point.localA + (collisionInfo.point.normal * 5.0f), Vector4(1,0,0,1), 0.01f);
 	return sphereCheck;
 }
-
-// TODO fix AABB Capsule collisions
 
 bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeB, const Transform& worldTransformB, const CapsuleVolume& volumeA, const Transform& worldTransformA, CollisionInfo& collisionInfo)
 {
@@ -763,7 +759,6 @@ bool NCL::CollisionDetection::SphereOBBIntersection(const SphereVolume& volumeA,
 
 bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, const Transform& worldTransformA, const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo)
 {
-	//From here: https://wickedengine.net/2020/04/26/capsule-collision-detection/
 
 	// Cap A
 	Vector3 aPointA = worldTransformA.GetPosition() + (worldTransformA.GetOrientation() * (Vector3(0, 1, 0) * (volumeA.GetHalfHeight() - volumeA.GetRadius())));
