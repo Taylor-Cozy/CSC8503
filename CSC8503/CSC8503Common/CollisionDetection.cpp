@@ -757,6 +757,11 @@ bool NCL::CollisionDetection::SphereOBBIntersection(const SphereVolume& volumeA,
 	return check;
 }
 
+/*
+* Reference:
+https://wickedengine.net/2020/04/26/capsule-collision-detection/
+*/
+
 bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, const Transform& worldTransformA, const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo)
 {
 
