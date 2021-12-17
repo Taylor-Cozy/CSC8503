@@ -155,6 +155,11 @@ public:
 			return PushdownResult::Push;
 		}
 
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+			*newState = new Game(g);
+			return PushdownResult::Push;
+		}
+
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 			return PushdownResult::Exit;
 		}
@@ -393,7 +398,7 @@ hide or show the
 */
 
 int main() {
-	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+	Window*w = Window::CreateGameWindow("CSC8503 Game technology!", 1600, 900);
 
 	//TestPushdownAutomata(w);
 

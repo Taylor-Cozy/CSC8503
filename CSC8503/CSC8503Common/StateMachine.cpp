@@ -11,8 +11,9 @@ StateMachine::StateMachine()
 
 StateMachine::~StateMachine()
 {
-	for (auto& i : allStates)
+	for (auto& i : allStates) {
 		delete i;
+	}
 
 	for (auto& i : allTransitions)
 		delete i.second;

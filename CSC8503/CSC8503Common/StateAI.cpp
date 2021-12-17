@@ -115,16 +115,20 @@ StateAI::StateAI(NavigationGrid* navGrid, Player* player, vector<GameObject*> po
 		Guard(dt);
 		});
 
-	StateTransition* stateGuardChasePlayer = new StateTransition(guard, chasePlayer, [&](void)->bool {
+	State* chasePlayer2 = new State([&](float dt)->void {
+		ChasePlayer(dt);
+		});
+
+	StateTransition* stateGuardChasePlayer = new StateTransition(guard, chasePlayer2, [&](void)->bool {
 		return (playerPos - this->transform.GetPosition()).Length() < 30.0f;
 		});
 
-	StateTransition* stateChasePlayerGuard = new StateTransition(chasePlayer, guard, [&](void)->bool {
+	StateTransition* stateChasePlayerGuard = new StateTransition(chasePlayer2, guard, [&](void)->bool {
 		return (playerPos - this->transform.GetPosition()).Length() > 50.0f;
 		});
 
 	guardMachine->AddState(guard);
-	guardMachine->AddState(chasePlayer);
+	guardMachine->AddState(chasePlayer2);
 
 	guardMachine->AddTransition(stateGuardChasePlayer);
 	guardMachine->AddTransition(stateChasePlayerGuard);
@@ -251,7 +255,6 @@ void StateAI::Wander(float dt)
 
 void StateAI::ChasePlayer(float dt)
 {
-	std::cout << "Chase Player" << std::endl;
 	guard = false;
 	if (powerupTime < 0.0f)
 		currentMoveSpeed = chaseMoveSpeed;
@@ -266,7 +269,6 @@ void StateAI::ChasePlayer(float dt)
 
 void StateAI::GetPowerUp(float dt)
 {
-	std::cout << "Get Powerup" << std::endl;
 	if (powerupTime < 0.0f)
 		currentMoveSpeed = defaultMoveSpeed;
 	if (currentTime < 0.0f) {
@@ -279,7 +281,6 @@ void StateAI::GetPowerUp(float dt)
 
 void StateAI::Guard(float dt)
 {
-	std::cout << "Guard" << std::endl;
 	if (powerupTime < 0.0f)
 		currentMoveSpeed = guardSpeed;
 	if (!guard) {

@@ -94,10 +94,10 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 
 	//Debug::DrawLine(Vector3(), Vector3(0, 20, 0), Debug::RED);
-	Debug::DrawLine(Vector3(), Vector3(360, 0, 0), Debug::RED);
-	Debug::DrawLine(Vector3(360, 0, 0), Vector3(360, 0, 360), Debug::RED);
-	Debug::DrawLine(Vector3(360, 0, 360), Vector3(0, 0, 360), Debug::RED);
-	Debug::DrawLine(Vector3(0, 0, 360), Vector3(0, 0, 0), Debug::RED);
+	//Debug::DrawLine(Vector3(), Vector3(360, 0, 0), Debug::RED);
+	//Debug::DrawLine(Vector3(360, 0, 0), Vector3(360, 0, 360), Debug::RED);
+	//Debug::DrawLine(Vector3(360, 0, 360), Vector3(0, 0, 360), Debug::RED);
+	//Debug::DrawLine(Vector3(0, 0, 360), Vector3(0, 0, 0), Debug::RED);
 
 	if (player) {
 		renderer->DrawString("Time Taken: " + std::to_string(player->GetTimeTaken()) + "s", Vector2(5, 10), Debug::RED);
@@ -305,37 +305,45 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::InitWorld() {
-	//world->AddLayerConstraint(Vector2(0, 1));
 	world->ClearAndErase();
 	physics->Clear();
 
-	//GameObject* a = AddCubeToWorld(Vector3(0, 1.5f, 0), Vector3(1, 1, 1));
-	//a->GetTransform().SetOrientation(Quaternion(0, 0.25f, 0, 1.0f));
-	//GameObject* b = AddCubeToWorld(Vector3(10, 1.5f, 0), Vector3(1, 1, 1));
-	//b->GetTransform().SetOrientation(Quaternion(0.25f, 0, 0, 1.0f));
-
-	//AddCubeToWorld(Vector3(10, 2, 0), Vector3(1, 1, 1));
-	//AddCubeToWorld(Vector3(10, 4, 0), Vector3(1, 1, 1));
-	//AddCubeToWorld(Vector3(10, 6, 0), Vector3(1, 1, 1));
-	//AddCubeToWorld(Vector3(10, 8, 0), Vector3(1, 1, 1));
-	//AddCubeToWorld(Vector3(10, 10, 0), Vector3(1, 1, 1));
-	AddCubeToWorld(Vector3(10, 12, 0), Vector3(1, 1, 1), true);
-
-	// Floor
-	AddCubeToWorld(Vector3(0, -2, 0), Vector3(20, 2, 100), false, 0, 0);
-
-	//AddSphereToWorld(Vector3(0, 5, 0), 1.0f);
-	//AddSphereToWorld(Vector3(10, 5, 0), 1.0f);
-
-	world->AddLayerConstraint(Vector2(0, 0));
 	world->AddLayerConstraint(Vector2(-1, 0));
 
-	//AddCapsuleToWorld(Vector3(0, 5, 0), 3.0f, 1.5f);
-	//InitMixedGridWorld(5, 5, 3.5f, 3.5f);
-	//InitGameExamples();
-	//InitDefaultFloor();
-	//BridgeConstraintTest();
-	//testStateObject = AddStateObjectWorld(Vector3(0, 10, 0));
+	GameObject* a = AddCubeToWorld(Vector3(15, 2, 15), Vector3(1, 1, 1), true, 10.0f, 1, false, true);
+	GameObject* b = AddCubeToWorld(Vector3(10, 2, 15), Vector3(1, 1, 1), true, 10.0f, 1, false, true);
+	a->GetRenderObject()->SetColour(Debug::CYAN);
+	b->GetRenderObject()->SetColour(Debug::CYAN);
+
+	GameObject* c = AddCubeToWorld(Vector3(10, 2, 10), Vector3(1, 1, 1), false, 10.0f, 1, false, true);
+	GameObject* d = AddCubeToWorld(Vector3(15, 2, 10), Vector3(1, 1, 1), false, 10.0f, 1, false, true);
+	c->GetPhysicsObject()->SetFriction(false);
+	d->GetPhysicsObject()->SetFriction(false);
+
+	// Floor
+	GameObject* e = AddCubeToWorld(Vector3(0, -2, 0), Vector3(250, 2, 250), false, 0, 0);
+
+	GameObject* cap1 = AddCapsuleToWorld(Vector3(15, 5, 0), 3.0f, 1.5f);
+	GameObject* cap2 = AddCapsuleToWorld(Vector3(10, 5, 0), 3.0f, 1.5f);
+	cap1->SetDynamic(true);
+	cap2->SetDynamic(true);
+
+	GameObject* sphere1 = AddSphereToWorld(Vector3(10, 5, 20), 1.0f, 10.0f, false, false, true);
+	GameObject* sphere2 = AddSphereToWorld(Vector3(15, 5, 20), 1.0f, 10.0f, false, false, true);
+
+	a->SetLayer(1);
+	b->SetLayer(1);
+	c->SetLayer(1);
+	d->SetLayer(1);
+	e->SetLayer(1);
+	cap1->SetLayer(1);
+	cap2->SetLayer(1);
+	sphere1->SetLayer(1);
+	sphere2->SetLayer(1);
+
+	BridgeConstraintTest();
+
+	world->BuildStaticList();
 }
 
 void TutorialGame::BridgeConstraintTest(Vector3 cubeSize, Vector3 startPos) {
@@ -410,7 +418,7 @@ rigid body representation. This and the cube function will let you build a lot o
 physics worlds. You'll probably need another function for the creation of OBB cubes too.
 
 */
-GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool rubber, bool hollow) {
+GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool rubber, bool hollow, bool dynamic) {
 	GameObject* sphere = new GameObject("Sphere");
 	
 	// Raycasting Tutorial 1 - Further Work Part 1
@@ -439,7 +447,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 		sphere->GetPhysicsObject()->SetElasticity(0.2f);
 
 	world->AddGameObject(sphere);
-
+	sphere->SetDynamic(dynamic);
 	return sphere;
 }
 
@@ -464,7 +472,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	return capsule;
 }
 
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger) {
+GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB, float inverseMass, int layer, bool isTrigger, bool dynamic) {
 	GameObject* cube = new GameObject();
 	if (OBB) {
 		OBBVolume* volume = new OBBVolume(dimensions);
@@ -491,7 +499,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 
 	cube->SetLayer(layer);
 	cube->SetTrigger(isTrigger);
-
+	cube->SetDynamic(dynamic);
 	return cube;
 }
 
@@ -514,10 +522,10 @@ void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing
 			Vector3 position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
 
 			if (rand() % 2) {
-				AddCubeToWorld(position, cubeDims);
+				AddCubeToWorld(position, cubeDims, false, 10.0f, 1, false, true);
 			}
 			else {
-				AddSphereToWorld(position, sphereRadius, 10.0f, rand() % 2);
+				AddSphereToWorld(position, sphereRadius, 10.0f, rand() % 2, false, true);
 			}
 		}
 	}

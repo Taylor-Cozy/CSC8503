@@ -45,7 +45,7 @@ namespace NCL {
 			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest(Vector3 cubeSize = Vector3(2, 1, 8), Vector3 startPos = Vector3(-100, 200, 0));
+			void BridgeConstraintTest(Vector3 cubeSize = Vector3(8, 1, 2), Vector3 startPos = Vector3(-100, 200, 0));
 	
 			bool SelectObject();
 			void MoveSelectedObject(float dt);
@@ -53,8 +53,8 @@ namespace NCL {
 			void LockedObjectMovement();
 
 			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool rubber = false, bool hollow = false);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB = false, float inverseMass = 10.0f, int layer = 1, bool isTrigger = false);
+			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool rubber = false, bool hollow = false, bool dynamic = false);
+			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, bool OBB = false, float inverseMass = 10.0f, int layer = 1, bool isTrigger = false, bool dynamic = false);
 			
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 
