@@ -380,7 +380,7 @@ void PhysicsSystem::BroadPhase() {
 			}
 		}
 		});
-
+	//tree.DebugDraw(Debug::RED);
 	// Test all dynamic objects against eachother
 	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
 		CollisionDetection::CollisionInfo info;
