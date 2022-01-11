@@ -1,5 +1,5 @@
 # C++ Physics Engine
-## CSC8503 Gaming Technologies
+## University Coursework
 
 This is part of my MSc in Games Engineering. I had to replicate the game screwball scramble by creating my own physics engine. The coursework was split into two parts,
 Part A consisted of simple collision detection, such as AABB, Sphere, plane, and Ray. It also required some collision resolution, application of forces, 
